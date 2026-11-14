@@ -9,19 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 // The platform's settings, such as DATABASE_URL, become options here, and only here.
 builder.Configuration.AddPlatformSettings();
 
-// JSON log lines, the correlation id and traces, as the platform's log
-// contract says (.claude/rules/logging.md).
-builder.AddPlatformLogging();
-builder.AddPlatformTelemetry("api");
-
-builder.Services.AddPlatformProblemDetails();
+builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 builder.Services.AddAppDbContext(builder.Configuration);
 builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>(tags: ["ready"]);
 
 var app = builder.Build();
 
-app.UseCorrelationId();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 
