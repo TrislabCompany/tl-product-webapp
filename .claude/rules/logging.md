@@ -5,9 +5,9 @@ paths:
 
 # Logging
 
-Checked by: `CA2254` (the message template must be a constant) through `AnalysisLevel=latest`; the levels and the never-logged list are review only. The logs are what support reads during an incident: write each line for the person who has only the logs and a trace id.
+Checked by: `CA2254` (the message template must be a constant) through `AnalysisLevel=latest`; the line format by `PlatformJsonFormatterTests` and the correlation id by the integration `ApiTests`; the levels and the never-logged list are review only. The logs are what support reads during an incident: write each line for the person who has only the logs and a trace id.
 
-The platform collects stdout into Azure Monitor and keeps it for 30 days.
+The platform collects stdout into Azure Monitor and keeps it for 30 days. Outside `local` every line is one JSON object with the fields of the platform's log contract (ADR 0062; `docs/architecture.md` section 6), written by `src/Api/Platform/PlatformJsonFormatter.cs`. Don't add another console provider or formatter: the contract is what makes one query work across products.
 
 ## Structured messages only
 
@@ -39,4 +39,4 @@ Secrets, tokens, keys, connection strings (`DATABASE_URL`), passwords; request a
 
 ## Correlation
 
-The trace id is the correlation id. It comes from the W3C `traceparent` header when the caller sends one, and every ProblemDetails response carries it as `traceId`, which is what a user quotes to support.
+The trace id is the correlation id. It comes from the W3C `traceparent` header when the caller sends one, every response carries it as `X-Correlation-ID`, and every ProblemDetails response as `traceId` (`PlatformObservability`), which is what a user quotes to support.
