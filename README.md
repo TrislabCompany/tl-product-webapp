@@ -48,9 +48,9 @@ It has **no sign-in**. Sandbox hostnames are behind the platform's Zero Trust si
 | pnpm | 10.34.9 |
 | ESLint and Vitest | ESLint 10.13.0 with `typescript-eslint` 8.72.1; Vitest 5.0.5 |
 | nginx | 1.30.6 (`nginxinc/nginx-unprivileged:1.30.6-alpine`) |
-| .NET | SDK 10.0.403 (`global.json`), runtime 10.0.14 (`aspnet:10.0.14-noble-chiseled`) |
-| ASP.NET Core | 10.0.14 |
-| EF Core | 10.0.14, with Npgsql's provider 10.0.3 |
+| .NET | SDK 10.0.404 (`global.json`), runtime 10.0.15 (`aspnet:10.0.15-noble-chiseled`) |
+| ASP.NET Core | 10.0.15 |
+| EF Core | 10.0.15, with Npgsql's provider 10.0.3 |
 | Postgres | 17.11 (`postgres:17.11-alpine`, in `docker-compose.yml` and the integration tests) |
 | xUnit and Testcontainers | xUnit v3 4.0.2; Testcontainers 4.16.0 |
 | Trivy | 0.74.0, in `ci / ci` |
