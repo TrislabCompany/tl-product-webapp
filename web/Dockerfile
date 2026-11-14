@@ -17,7 +17,11 @@ FROM nginxinc/nginx-unprivileged:1.30.6-alpine@sha256:f5116ed4606f3eb015dd4a8e28
 # curl, and the dynamic modules nginx doesn't load here. Then creates the
 # folders 40-config.sh writes /config.json and the /api upstream into, owned
 # by the nginx user.
+# Upgrades musl and zlib to the Alpine fixes of CVE-2026-107891 and
+# CVE-2026-85091 until the base image is rebuilt with them; drop this line
+# once Trivy passes without it.
 USER root
+RUN apk upgrade --no-cache musl musl-utils zlib
 RUN apk del --no-network curl nginx-module-geoip nginx-module-image-filter nginx-module-njs nginx-module-xslt \
     && install -d -o nginx -g nginx /usr/share/nginx/config /etc/nginx/upstream
 USER nginx
