@@ -6,5 +6,6 @@
 
 - [ ] `dotnet test src/App.slnx` and `pnpm --dir web test` pass locally
 - [ ] Is the migration backward compatible? The previous revision of the API keeps serving on the migrated database until the new one is ready, or there is no migration
+- [ ] The API only gained fields and endpoints, or the breaking change is described above
 - [ ] `platform.yaml` is unchanged, or the change is described above and stays within the stamp's caps
 - [ ] Screenshots of the changed pages are attached, or nothing visible changed
