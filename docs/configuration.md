@@ -13,7 +13,6 @@ The platform sets environment variables on each app. Locally, `.env` sets the sa
 | `DATABASE_URL` | `api`, `migrator` | The stamp's Postgres, as a URL such as `postgresql://user:password@host:5432/db?sslmode=require`, from the Key Vault | `postgresql://app:app@postgres:5432/app` |
 | `PUBLIC_*` | `web` | `apps[].env` of `web` in `stamp.yaml` | `PUBLIC_EXAMPLE` |
 | `API_UPSTREAM` | `web` | Never in a stamp | `http://api:8080`, in `docker-compose.yml` |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | `api` | Not set yet: the platform sets it once it collects traces and metrics (roadmap phase 17) | Not set |
 
 Secrets arrive as ordinary environment variables too: the platform reads them from the Key Vault. The app never signs in to the Key Vault, and no secret is ever in the repository, the image or `appsettings.json`.
 
@@ -24,9 +23,7 @@ Secrets arrive as ordinary environment variables too: the platform reads them fr
 | Setting | Configuration key | When unset |
 | --- | --- | --- |
 | `DATABASE_URL` | `ConnectionStrings:Database`, read by the EF Core context in the API and the migrator | Neither starts: Postgres is required |
-| `PLATFORM_ENVIRONMENT` | `Platform:Environment`, in the logs and in `GET /api/health/info`. Outside `local` the logs are JSON lines ([architecture.md section 6](architecture.md#6-logs-the-correlation-id-and-traces)) | `local` |
-| `PLATFORM_STAMP` | `Platform:Stamp`, in the logs and the traces | Left out of the logs |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | `Platform:OtlpEndpoint`: when set, the API exports traces and metrics there with OpenTelemetry, which reads the variable itself | Nothing is exported |
+| `PLATFORM_ENVIRONMENT` | `Platform:Environment`, in the logs and in `GET /api/health/info` | `local` |
 
 `DATABASE_URL` is a URL; the mapping turns it into an Npgsql connection string, with `sslmode` and `channel_binding` as Npgsql's `SSL Mode` and `Channel Binding`.
 

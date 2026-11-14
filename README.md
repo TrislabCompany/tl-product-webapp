@@ -51,7 +51,6 @@ It has **no sign-in**. Sandbox hostnames are behind the platform's Zero Trust si
 | .NET | SDK 10.0.404 (`global.json`), runtime 10.0.15 (`aspnet:10.0.15-noble-chiseled`) |
 | ASP.NET Core | 10.0.15 |
 | EF Core | 10.0.15, with Npgsql's provider 10.0.3 |
-| OpenTelemetry | 1.20.1: hosting, OTLP exporter, ASP.NET Core and HttpClient instrumentation |
 | Postgres | 17.11 (`postgres:17.11-alpine`, in `docker-compose.yml` and the integration tests) |
 | xUnit and Testcontainers | xUnit v3 4.0.2; Testcontainers 4.16.0 |
 | Trivy | 0.74.0, in `ci / ci` |
@@ -83,6 +82,6 @@ Every base image is pinned by digest. Renovate will keep the versions current; u
 ## More
 
 - [Getting started](docs/getting-started.md): run the app with Docker Compose or piece by piece, the services, and the tests.
-- [Architecture](docs/architecture.md): the images, the apps, the migrator, where data lives, the request path, and the logs and traces.
+- [Architecture](docs/architecture.md): the images, the apps, the migrator, where data lives and the request path.
 - [Configuration](docs/configuration.md): the settings, `PlatformConfiguration.cs`, `/config.json`, the `/api` upstream, and how to add a setting or a secret.
 - [Deployment](docs/deployment.md): Environments, deploy, release and promote, migrations, `platform.yaml` and the caps, and how to ask for more. Section 7: the steps for developers.

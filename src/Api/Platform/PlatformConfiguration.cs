@@ -1,4 +1,3 @@
-using System.Reflection;
 using Microsoft.AspNetCore.WebUtilities;
 using Npgsql;
 
@@ -17,18 +16,9 @@ public static class PlatformConfiguration
     public const string LocalEnvironment = "local";
 
     /// <summary>
-    /// The version the app was built as, in the logs and in GET /api/health/info.
-    /// The platform passes no version: the image is built once per commit and
-    /// only tagged at release.
-    /// </summary>
-    public static readonly string AppVersion =
-        typeof(PlatformConfiguration).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unknown";
-
-    /// <summary>
-    /// Maps DATABASE_URL to ConnectionStrings:Database, PLATFORM_ENVIRONMENT to
-    /// Platform:Environment, PLATFORM_STAMP to Platform:Stamp, and
-    /// OTEL_EXPORTER_OTLP_ENDPOINT to Platform:OtlpEndpoint. Throws when
-    /// DATABASE_URL is unset: neither the API nor the migrator runs without Postgres.
+    /// Maps DATABASE_URL to ConnectionStrings:Database, and PLATFORM_ENVIRONMENT
+    /// to Platform:Environment. Throws when DATABASE_URL is unset: neither the
+    /// API nor the migrator runs without Postgres.
     /// </summary>
     public static void AddPlatformSettings(this IConfigurationManager configuration)
     {
@@ -46,10 +36,6 @@ public static class PlatformConfiguration
         {
             ["ConnectionStrings:Database"] = ToConnectionString(databaseUrl),
             ["Platform:Environment"] = string.IsNullOrWhiteSpace(environment) ? LocalEnvironment : environment,
-            ["Platform:Stamp"] = configuration["PLATFORM_STAMP"],
-            // Set by the platform once it collects traces (ADR 0062); the
-            // OpenTelemetry exporter reads the variable itself.
-            ["Platform:OtlpEndpoint"] = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"],
         });
     }
 

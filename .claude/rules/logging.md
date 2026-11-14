@@ -39,4 +39,8 @@ Secrets, tokens, keys, connection strings (`DATABASE_URL`), passwords; request a
 
 ## Correlation
 
-The trace id is the correlation id. It comes from the W3C `traceparent` header when the caller sends one, and every ProblemDetails response carries it as `traceId`, which is what a user quotes to support.
+The trace id is the correlation id. It comes from the W3C `traceparent` header when the caller sends one.
+
+## Format
+
+The platform's log contract (JSON lines, `X-Correlation-ID`, ProblemDetails `traceId`; ADR 0062, the Logs section of tl-platform's `stamps/aca-app/README.md`) comes from the tl-framework packages, not from code in this template. Don't write a log formatter or correlation middleware here.

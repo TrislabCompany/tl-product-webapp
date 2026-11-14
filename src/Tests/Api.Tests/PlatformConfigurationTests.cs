@@ -41,17 +41,9 @@ public class PlatformConfigurationTests
     [Fact]
     public void Maps_the_platform_settings()
     {
-        var configuration = Configure(new()
-        {
-            ["DATABASE_URL"] = "postgres://app:app@postgres/app",
-            ["PLATFORM_ENVIRONMENT"] = "dev",
-            ["PLATFORM_STAMP"] = "shr-con-dev",
-            ["OTEL_EXPORTER_OTLP_ENDPOINT"] = "http://collector:4317",
-        });
+        var configuration = Configure(new() { ["DATABASE_URL"] = "postgres://app:app@postgres/app", ["PLATFORM_ENVIRONMENT"] = "dev" });
 
         Assert.Equal("dev", configuration["Platform:Environment"]);
-        Assert.Equal("shr-con-dev", configuration["Platform:Stamp"]);
-        Assert.Equal("http://collector:4317", configuration["Platform:OtlpEndpoint"]);
         Assert.Equal("postgres", new NpgsqlConnectionStringBuilder(configuration.GetConnectionString("Database")).Host);
     }
 

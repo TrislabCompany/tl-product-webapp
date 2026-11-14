@@ -1,4 +1,4 @@
-using Api.Platform;
+using System.Reflection;
 
 namespace Api.Features.Health;
 
@@ -11,8 +11,11 @@ public static class HealthInfoEndpoints
 {
     public sealed record HealthInfo(string Name, string Version, string Environment);
 
+    private static readonly string Version =
+        typeof(HealthInfoEndpoints).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unknown";
+
     public static void MapHealthInfo(this IEndpointRouteBuilder api) =>
         api.MapGet("/health/info", (IConfiguration configuration) =>
-            new HealthInfo("api", PlatformConfiguration.AppVersion, configuration["Platform:Environment"]!))
+            new HealthInfo("api", Version, configuration["Platform:Environment"]!))
             .WithTags("Health");
 }
