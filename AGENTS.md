@@ -15,6 +15,7 @@ This file is the guide for every AI coding tool (Claude Code, Cursor, Codex, …
 | `src/Tests/` | `Api.Tests` (unit) and `Integration.Tests` (the API against Postgres in Testcontainers, needs Docker) |
 | `platform.yaml` | The images and each app's sizing, within the stamp's caps ([docs/deployment.md](docs/deployment.md#5-platformyaml-and-the-caps)) |
 | `.github/workflows/` | `ci.yml` (the check `ci / ci`), `deploy.yml`, `release.yml`: they call the platform's reusable workflows |
+| `.claude/rules/` | The coding rules, loaded by path (index below) |
 | `.claude/skills/` | The skills below |
 
 ## Build and test
@@ -36,9 +37,34 @@ Run both test commands before every push: `ci / ci` runs them, builds the three 
 - **Migrations are backward compatible:** the previous API revision keeps serving on the migrated database, and a rollback never reverses one. Add first, drop in a later release; never edit a migration that has run ([docs/deployment.md](docs/deployment.md#3-migrations)).
 - `platform.yaml` stays within the stamp's caps.
 
+## Coding rules
+
+The rules for writing code are in `.claude/rules/`. Each has `paths:` front matter, so Claude Code loads it when you touch a matching file; other tools: read the rule before working in that area. Each rule says which tool checks it; the prose is what review has to catch.
+
+| Working on… | Read |
+| --- | --- |
+| Where code goes: features, `Program.cs`, platform settings, the front end's API calls | `architecture.md` |
+| C# style, naming, async, errors | `coding-csharp.md` |
+| TypeScript and React style, errors, naming | `coding-typescript.md` |
+| Log messages, levels, data never logged, the trace id | `logging.md` |
+| Unit, integration and front-end tests | `testing.md` |
+| Routes, errors, JSON, compatibility, migrations | `api-contracts.md` |
+
+## Git and review
+
+- Branch from `main` with a short kebab-case topic (`item-due-dates`). One change per PR; a workflow change goes in its own PR.
+- The PR title is an imperative plain sentence of 72 characters or fewer; it becomes the squash commit. Answer the PR template's checklist.
+- A PR merges with `ci / ci` green and one code owner's approval, never your own. The author resolves the threads.
+- A review checks: correctness and edge cases, a test for each behaviour change, logs per `logging.md`, contracts per `api-contracts.md`, docs updated, no secrets.
+
+## Docs and tooling
+
+- The build runs with `TreatWarningsAsErrors`: a warning fails it. Fix it; a suppression needs a `Justification`.
+- Tools are pinned: the SDK in `global.json`, pnpm in `web/package.json` (`packageManager`).
+- `README.md` says what the app is and how to run it; `docs/` how it works on the platform; `.claude/rules/` how code is written here. Change the rule when you change the convention.
+
 ## Rules
 
-- **Every change is a PR** to `main`: `ci / ci` green and a code owner's approval. Answer the PR template's checklist.
 - **Release, deploy and promote only with the workflows** ([docs/deployment.md](docs/deployment.md#7-steps-for-developers)). A tag `vX.Y.Z` is never moved or deleted; a wrong release is replaced by the next version.
 - **Don't change the workflows** in `.github/workflows/`: they only call the platform's reusable workflows. Ask the platform team.
 - **No secrets** in the repository, the images or `appsettings.json`. They reach the app as environment variables from the stamp's Key Vault. Never read `.env`; `.env.example` lists the names.
