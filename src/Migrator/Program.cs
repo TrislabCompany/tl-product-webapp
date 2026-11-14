@@ -26,6 +26,7 @@ internal static class Program
     {
         var builder = Host.CreateApplicationBuilder(args);
         builder.Configuration.AddPlatformSettings();
+        builder.AddPlatformLogging();
         builder.Services.AddAppDbContext(builder.Configuration);
 
         using var host = builder.Build();

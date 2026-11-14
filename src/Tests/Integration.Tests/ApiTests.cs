@@ -1,7 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Api.Features.Health;
 using Api.Features.Items;
+using Api.Platform;
 
 namespace Integration.Tests;
 
@@ -60,5 +62,33 @@ public class ApiTests(ApiFactory factory)
         var response = await _client.PostAsJsonAsync("/api/items", new { name = " " }, Ct);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Returns_the_callers_trace_id_as_the_correlation_id()
+    {
+        const string traceId = "4bf92f3577b34da6a3ce929d0e0e4736";
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/api/health/info");
+        request.Headers.Add("traceparent", $"00-{traceId}-00f067aa0ba902b7-01");
+
+        var response = await _client.SendAsync(request, Ct);
+
+        Assert.Equal(traceId, Assert.Single(response.Headers.GetValues(PlatformObservability.CorrelationHeader)));
+    }
+
+    [Theory]
+    [InlineData("POST", "/api/items")]
+    [InlineData("PUT", "/api/items/999999")]
+    public async Task Puts_the_correlation_id_in_a_problem_response(string method, string path)
+    {
+        using var request = new HttpRequestMessage(new HttpMethod(method), path) { Content = JsonContent.Create(new { name = " " }) };
+
+        var response = await _client.SendAsync(request, Ct);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var correlationId = Assert.Single(response.Headers.GetValues(PlatformObservability.CorrelationHeader));
+        Assert.Matches("^[0-9a-f]{32}$", correlationId);
+        using var problem = JsonDocument.Parse(await response.Content.ReadAsStringAsync(Ct));
+        Assert.Equal(correlationId, problem.RootElement.GetProperty("traceId").GetString());
     }
 }

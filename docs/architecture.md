@@ -53,3 +53,16 @@ The template has no sign-in of its own. A product adds the sign-in it needs befo
 ## 5. The front end
 
 `web/src/main.tsx` loads `/config.json` first, then renders the app. `App.tsx` holds the routes and the layout; each feature is a folder in `web/src/features/`, and calls the API at the relative path `/api`. The build writes `web/dist/`, which the image serves; hashed files under `/assets/` are cached for a year.
+
+## 6. Logs, the correlation id and traces
+
+The API and the migrator write the platform's log contract (ADR 0062 in `tl-cloud-infrastructure`; the Logs section of `stamps/aca-app/README.md` in `tl-platform`): one JSON object per line on stdout, which the platform collects into Azure Monitor for 30 days. `src/Api/Platform/PlatformJsonFormatter.cs` writes the lines; `PlatformObservability.cs` switches it on in every environment but `local`, which keeps readable console lines.
+
+```json
+{"timestamp":"2026-11-14T10:42:01.904Z","level":"Information","message":"Item 42 renamed","messageTemplate":"Item {ItemId} renamed","category":"Api.Features.Items","trace_id":"4bf92f3577b34da6a3ce929d0e0e4736","span_id":"00f067aa0ba902b7","environment":"dev","stamp":"shr-con-dev","version":"1.0.0","itemId":42}
+```
+
+- **The correlation id is the trace id.** The API takes it from the caller's W3C `traceparent` header, or starts a new one. Every response carries it as `X-Correlation-ID`, and every ProblemDetails response as `traceId`. A user quotes it to support, and one query finds every line of the request.
+- **Health probes** (`/healthz`, `/readyz`) write no `Information` line: `appsettings.json` logs `Microsoft.AspNetCore` from `Warning` up.
+- **Traces and metrics** use OpenTelemetry and are exported over OTLP only when `OTEL_EXPORTER_OTLP_ENDPOINT` is set (docs/configuration.md). Until the platform sets it, nothing is exported.
+- **`version`** is the API's build version. The platform passes none, because the image is built once per commit and only tagged at release.
