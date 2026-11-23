@@ -33,6 +33,7 @@ internal sealed class TestDataSeeder(IServiceProvider services, ILogger<TestData
             .MultiTenantContext = new MultiTenantContext<AppTenantInfo>(tenant);
 
         await SeedDemoUserAsync(scope.ServiceProvider);
+        await StaffRoleSeeder.SeedDemoStaffAsync(scope.ServiceProvider, logger); // feature:staff-area
         await SeedItemsAsync(scope.ServiceProvider.GetRequiredService<AppDbContext>(), cancellationToken);
     }
 

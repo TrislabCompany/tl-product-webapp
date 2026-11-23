@@ -40,6 +40,10 @@ A module that supports single-tenant mode, and that the product removed or the f
 
 A module the framework does not have yet is built in `tl-framework`, never here.
 
-## 4. Test data
+## 4. The staff area
+
+The optional `/admin` area is a feature of the starter, not a module: it uses Identity, which is always kept, and `init-product --features staff-area` keeps it (without the option, it is removed). How it works and how to switch it on: [staff-area.md](staff-area.md).
+
+## 5. Test data
 
 The framework's `seed-demo` is refused in single-tenant mode, because it creates demo tenants. The migrator's own `TestDataSeeder` (`src/Migrator/TestDataSeeder.cs`) seeds demo data for the one tenant, only where `SEED_TEST_DATA` is `true`: a demo user (`user@example.com`, the public password `Password123!`) and the sample items. It is idempotent. Add the demo data of each feature or module of the product to it; it must never run where real people sign in.

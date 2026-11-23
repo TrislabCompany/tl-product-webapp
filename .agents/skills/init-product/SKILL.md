@@ -16,7 +16,7 @@ Runs once, in the first pull request of a repository the platform created from t
 1. **Check the repository:** `template-manifest.yaml` exists (otherwise the product is already initialised: stop). The branch is clean.
 2. **Choose** with the team, from the product's `docs/brief.md` or its hand-off plan:
    - the **modules**: `identity` is always kept; `auditing`, `files`, `notifications` and `webhooks` only when the brief needs what they do ([docs/modules.md](../../../docs/modules.md#1-the-modules));
-   - the **features**: the ones `node scripts/init-product.mjs` lists when it runs with no options.
+   - the **features**: the ones `node scripts/init-product.mjs` lists when it runs with no options. `staff-area` (the `/admin` area, [docs/staff-area.md](../../../docs/staff-area.md)) only when the product has a public part and staff pages; it needs Identity, which is always kept.
 3. **Look first:** `node scripts/init-product.mjs --modules <list> --features <list> --dry-run` prints what would be kept, edited and deleted.
 4. **Run it** without `--dry-run`, and with `--name "<Product name>"` for the name on screen. It removes the marked lines and the files of every module and feature that is not kept, and the files `template-manifest.yaml` marks `template-only` or `sample`, including itself and its tests.
 5. **Fix what it cannot know:** the README (what the product is), the `docs/` pages of removed modules, the tenant values in `src/Api/appsettings.json` (`TenancyOptions:SingleTenant`: id, name, country, first administrator), and the sizing in `platform.yaml`.

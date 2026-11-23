@@ -36,6 +36,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             ["JWT_SIGNING_KEY"] = "integration-test-signing-key-integration-test-signing-key",
             ["SEED_ADMIN_PASSWORD"] = AdminPassword,
             ["SEED_TEST_DATA"] = "true",
+            ["StaffArea__Enabled"] = "true",
         };
         foreach (var (name, value) in settings)
         {
@@ -43,6 +44,10 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         }
 
         await RunMigratorAsync();
+
+        // Start the host once, here: the framework registers its permissions in a static list that is not safe
+        // for test classes that would otherwise start the host at the same time.
+        _ = Services;
     }
 
     // As in an Environment: Development would validate the whole container at start, and fail on the framework's

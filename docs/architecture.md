@@ -51,7 +51,7 @@ flowchart LR
 - nginx passes every request under `/api` to `api`, at `http://ca-<stamp>-api` inside the stamp, with the path unchanged. The page and the API share one origin, so the API needs no CORS settings.
 - `api` answers from Postgres.
 
-Every endpoint of the API needs a signed-in user unless it opts out with `.AllowAnonymous()`: the sample's items and `/api/health/info` do, so the public part of a product is explicit. Sign-in is the framework's Identity module: `POST /api/v1/identity/token/issue` with an e-mail and a password, with no tenant header. Production hostnames are public, so a product decides which endpoints stay anonymous before its first production stamp.
+Every endpoint of the API needs a signed-in user unless it opts out with `.AllowAnonymous()`: the sample's items and `/api/health/info` do, so the public part of a product is explicit. Sign-in is the framework's Identity module: `POST /api/v1/identity/token/issue` with an e-mail and a password, with no tenant header. Production hostnames are public, so a product decides which endpoints stay anonymous before its first production stamp. An app with a public part and a few staff pages uses the optional staff area under `/admin`, guarded by the same Identity ([staff-area.md](staff-area.md)).
 
 ## 5. The front end
 

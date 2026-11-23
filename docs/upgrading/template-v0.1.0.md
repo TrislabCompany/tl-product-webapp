@@ -12,6 +12,7 @@ Yes: the first release. The API is rebuilt on the framework (`Program.cs`, the m
 
 - **`tl-framework` 0.2.0**, published to GitHub Packages. The version is `TrislabFrameworkVersion` in `src/Directory.Packages.props`.
 - **Read access to the framework's packages** for the repository: every `Trislab.*` NuGet package and `@trislabcompany/framework-ui` must name the repository under *Manage Actions access*, or the organisation must pass another token as `packages-token` ([deployment.md](../deployment.md#8-access-to-the-frameworks-packages)).
+- **Only to use the staff area:** `StaffArea__Enabled=true` for `api` and `PUBLIC_STAFF_AREA=true` for `web` in the stamp, and the users of the staff in the role `Staff` (or `Admin`).
 - **Secrets and settings in the stamp** of each Environment: the secrets `jwt-signing-key` and `seed-admin-password` (and `hangfire-password`, `smtp-password` when used), and `TenancyOptions__SingleTenant__*` for `api` and `migrator` ([configuration.md](../configuration.md)). Without `jwt-signing-key` the API does not start in `Production`.
 - `app-workflows >= v0.2.0`, which passes `packages-token`.
 
@@ -33,6 +34,7 @@ Yes: the first release. The API is rebuilt on the framework (`Program.cs`, the m
 - **`src/Api/Dockerfile`, `Migrator/Dockerfile`, `web/Dockerfile`, `docker-compose.yml`, `.env.example`**: the BuildKit secret `packages`, and the new local settings.
 - **`web/`**: `@trislabcompany/framework-ui`, `i18n.ts`, the language switch, the English and Slovenian parity test, the Vitest setup.
 - **`AGENTS.md`**: the Role block, the template skills block, the framework rules; `CLAUDE.md` only imports it.
+- **The staff area** (`src/Api/Features/Staff/`, `src/Migrator/StaffRoleSeeder.cs`, `web/src/features/admin/`, `docs/staff-area.md`, the `StaffAreaTests`): the optional `/admin` area guarded by Identity, off until `StaffArea__Enabled` and `PUBLIC_STAFF_AREA` are `true`. `init-product --features staff-area` keeps it.
 - **`.claude/rules/`, `docs/`**: the framework, the modules, tenancy, packages access, texts in both languages.
 
 ### product

@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using Api.Data;
 using Api.Features.Health;
+using Api.Features.Staff; // feature:staff-area
 using Api.Features.Items;
 using Api.Platform;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -71,6 +72,9 @@ var moduleAssemblies = new Assembly[]
     typeof(WebhooksModule).Assembly, // module:webhooks
 };
 
+// The permission of the optional staff area, registered before the modules (docs/staff-area.md).
+StaffPermissions.Register(); // feature:staff-area
+
 // Tenancy first: one fixed tenant, set in TenancyOptions:SingleTenant (docs/configuration.md). There is no
 // tenant catalog, sign-up, plan or quota. SelectSupported drops any module the mode does not support.
 builder.AddTrislabTenancy(t => t.UseSingleTenant());
@@ -105,6 +109,7 @@ app.UseTrislabPlatform(p =>
 var api = app.MapGroup("/api");
 api.MapHealthInfo();
 api.MapItems();
+api.MapStaffArea(app.Configuration); // feature:staff-area
 
 // Liveness: the process answers. Readiness: every health check passes, Postgres included.
 app.MapHealthChecks("/healthz", new HealthCheckOptions { Predicate = _ => false }).AllowAnonymous();

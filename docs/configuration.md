@@ -19,8 +19,9 @@ The platform sets environment variables on each app. Locally, `.env` sets the sa
 | `SMTP_PASSWORD` | `api` | The secret `smtp-password`: the password of the ACS Email resource | Not set |
 | `SMTP_HOST` | `api` | Only to use another SMTP server than ACS | Not set |
 | `REDIS_URL` | `api`, `migrator` | The stamp's `cache`, when it has one | Not set |
+| `StaffArea__Enabled` | `api` | `apps[].env` of `api`: `true` maps the staff area under `/api/admin`; default `false` ([staff-area.md](staff-area.md)) | `true` |
 | `TenancyOptions__SingleTenant__*` | `api`, `migrator` | `apps[].env`, the same values for both ([section 2a](#2a-tenancy-mode)) | `src/Api/appsettings.json` |
-| `PUBLIC_*` | `web` | `apps[].env` of `web` in `stamp.yaml` | `PUBLIC_DEFAULT_LANGUAGE` |
+| `PUBLIC_*` | `web` | `apps[].env` of `web` in `stamp.yaml` | `PUBLIC_DEFAULT_LANGUAGE`, `PUBLIC_STAFF_AREA` |
 | `API_UPSTREAM` | `web` | Never in a stamp | `http://api:8080`, in `docker-compose.yml` |
 
 Secrets arrive as ordinary environment variables too: the platform reads them from the Key Vault. The app never signs in to the Key Vault, and no secret is ever in the repository, the image or `appsettings.json`.

@@ -12,6 +12,7 @@ The same block starts the `AGENTS.md` of every Trislab repository, so an agent i
 - **Contains:**
   - the host and the migrator, on the `tl-framework` packages in single-tenant mode, with every module that supports that mode registered;
   - a React app on `@trislabcompany/framework-ui`, with its texts in English and Slovenian;
+  - the optional staff area under `/admin`, guarded by the framework's Identity ([docs/staff-area.md](docs/staff-area.md));
   - the test-data seeder, and in the starter `scripts/init-product.mjs`, which keeps only the modules a product chooses;
   - the Dockerfiles, `platform.yaml` and the workflows that call the platform's.
 - **Never contains:**
@@ -101,7 +102,7 @@ The rules for writing code are in `.claude/rules/`. Each has `paths:` front matt
 - **Release, deploy and promote only with the workflows** ([docs/deployment.md](docs/deployment.md#7-steps-for-developers)). A tag `vX.Y.Z` is never moved or deleted; a wrong release is replaced by the next version. In the template repository itself a tag is `template-webapp/vX.Y.Z`, made only by the `template-release` workflow, never a `v*` tag.
 - **Don't change the workflows** in `.github/workflows/`: they only call the platform's reusable workflows. Ask the platform team.
 - **No framework source here.** Use the packages. A missing feature or a bug in a module is a change in `tl-framework`; do not copy the code, and do not write a log formatter, correlation middleware or tenancy code.
-- **Every endpoint needs a signed-in user unless it opts out.** The framework protects all of them; a public endpoint says `.AllowAnonymous()` (the sample's items and `/api/health/info` do). A staff or admin endpoint requires a permission, never just a sign-in.
+- **Every endpoint needs a signed-in user unless it opts out.** The framework protects all of them; a public endpoint says `.AllowAnonymous()` (the sample's items and `/api/health/info` do). A staff or admin endpoint requires a permission, never just a sign-in: staff endpoints go inside the group of `Features/Staff/StaffEndpoints.cs`, which `StaffAreaTests` checks.
 - **Every text on screen is in both languages.** A text goes in `web/src/locales/en-US/<namespace>.json` and `sl-SI/`, and is read with `t()`; the test `i18n.test.ts` fails on a key one language lacks.
 - **No secrets** in the repository, the images or `appsettings.json`. They reach the app as environment variables from the stamp's Key Vault. Never read `.env`; `.env.example` lists the names. A token for GitHub Packages is `PACKAGES_TOKEN`, never in a file.
 - **Docs travel with the change.** A change to a setting, an endpoint, an image or the way the app runs isn't done until `README.md` and `docs/` match it.
