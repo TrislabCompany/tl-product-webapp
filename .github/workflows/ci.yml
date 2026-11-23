@@ -6,11 +6,11 @@ name: ci
 # pinned by tag; the job is named ci like the one it calls, so the required
 # check is `ci / ci`. Change only the test command and the token here. The
 # integration tests start their own throw-away Postgres. The framework's
-# packages are on GitHub Packages: the workflow's token is passed as
-# packages-token, which the reusable workflow gives the test command as
+# packages are on GitHub Packages: the organisation secret PACKAGES_READ_TOKEN
+# (or the workflow's token without it) is passed as packages-token, which the reusable workflow gives the test command as
 # PACKAGES_TOKEN (nuget.config reads it) and every image build as a BuildKit
 # secret. pnpm trusts a token only in ~/.npmrc, so the test command writes it
-# there. The repository needs read access to each framework package
+# there. The organisation must give this repository the secret
 # (docs/deployment.md).
 
 on:
@@ -33,4 +33,4 @@ jobs:
         && pnpm --dir web install --frozen-lockfile
         && pnpm --dir web test
     secrets:
-      packages-token: ${{ secrets.GITHUB_TOKEN }}
+      packages-token: ${{ secrets.PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}

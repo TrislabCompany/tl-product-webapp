@@ -163,10 +163,10 @@ The API and the front end restore the packages of `tl-framework` from GitHub Pac
 
 | Where | Token | How it gets there |
 | --- | --- | --- |
-| `ci / ci` and `deploy.yml` | The workflow's `GITHUB_TOKEN`, passed as `packages-token` to the reusable workflow | The reusable workflow gives the test command `PACKAGES_TOKEN` (`nuget.config` reads it; the command writes it to `~/.npmrc` for pnpm) and every image build the BuildKit secret `packages` (`RUN --mount=type=secret,id=packages,env=PACKAGES_TOKEN` in the three Dockerfiles). No layer keeps it |
+| `ci / ci`, `deploy.yml` and `template-init.yml` | The organisation secret `PACKAGES_READ_TOKEN` (a classic token with only `read:packages`), or the workflow's `GITHUB_TOKEN` when the secret isn't there, passed as `packages-token` to the reusable workflow | The reusable workflow gives the test command `PACKAGES_TOKEN` (`nuget.config` reads it; the command writes it to `~/.npmrc` for pnpm) and every image build the BuildKit secret `packages` (`RUN --mount=type=secret,id=packages,env=PACKAGES_TOKEN` in the three Dockerfiles). No layer keeps it |
 | A developer's machine | A personal token with `read:packages` | [getting-started.md](getting-started.md#1-what-you-need) |
 | Renovate | Its own | `renovate.json` |
 
-**The repository must be allowed to read each package.** A package of the organisation lets the repositories named under its *Manage Actions access* read it with `GITHUB_TOKEN`. Until this repository is named there, for every `Trislab.*` NuGet package and `@trislabcompany/framework-ui`, the restore answers 401 and `ci / ci` fails at the restore. An organisation owner sets it once per package; it needs no change in this repository. A repository created from the template needs the same access, which the platform's onboarding must grant, or the organisation must pass an organisation secret with `read:packages` as `packages-token` instead.
+**The repository must get the organisation secret `PACKAGES_READ_TOKEN`.** An organisation owner gives the secret to this repository and to every repository created from the template. Without it the workflows fall back to `GITHUB_TOKEN`, which can read a package only when the package lists the repository under *Manage Actions access*; otherwise the restore answers 401 or 403 and `ci / ci` fails at the restore. The token expires: when it is renewed, only the secret changes.
 
 `release.yml` builds nothing, so it needs no token.
