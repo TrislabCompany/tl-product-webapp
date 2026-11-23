@@ -9,5 +9,8 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <!-- The chiseled runtime image has no ICU. -->
     <InvariantGlobalization>true</InvariantGlobalization>
+    <!-- Proprietary: LICENSE. -->
+    <Company>Trislab d.o.o.</Company>
+    <Copyright>Copyright (c) 2026 Trislab d.o.o. All rights reserved.</Copyright>
   </PropertyGroup>
 </Project>
