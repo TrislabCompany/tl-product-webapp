@@ -2,8 +2,10 @@
 # The services are named like the apps in platform.yaml and the stamp's
 # postgres container service, so the front end reaches the API at
 # http://api:8080 as it reaches http://ca-<stamp>-api in a stamp. The settings
-# come from .env, a copy of .env.example (docs/getting-started.md).
-name: tl-template-webapp
+# come from .env, a copy of .env.example (docs/getting-started.md). The images
+# build with the packages of tl-framework, which need PACKAGES_TOKEN in your
+# shell: a personal token with read:packages.
+name: tl-product-webapp
 
 services:
   postgres:
@@ -25,31 +27,40 @@ services:
 
   # The init container of api in a stamp: it finishes before api starts.
   migrator:
-    build: { context: ., dockerfile: src/Migrator/Dockerfile }
+    build: { context: ., dockerfile: src/Migrator/Dockerfile, secrets: [packages] }
     environment:
       DATABASE_URL: ${DATABASE_URL}
       PLATFORM_ENVIRONMENT: ${PLATFORM_ENVIRONMENT}
+      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD}
+      SEED_TEST_DATA: ${SEED_TEST_DATA}
     depends_on:
       postgres: { condition: service_healthy }
 
   api:
-    build: { context: ., dockerfile: src/Api/Dockerfile }
+    build: { context: ., dockerfile: src/Api/Dockerfile, secrets: [packages] }
     environment:
       DATABASE_URL: ${DATABASE_URL}
       PLATFORM_ENVIRONMENT: ${PLATFORM_ENVIRONMENT}
+      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
+      FrontendOptions__DefaultOrigin: http://localhost:8080
     depends_on:
       migrator: { condition: service_completed_successfully }
 
   web:
-    build: { context: web, dockerfile: Dockerfile }
+    build: { context: web, dockerfile: Dockerfile, secrets: [packages] }
     environment:
       API_UPSTREAM: http://api:8080
       PLATFORM_ENVIRONMENT: ${PLATFORM_ENVIRONMENT}
-      PUBLIC_EXAMPLE: ${PUBLIC_EXAMPLE}
+      PUBLIC_DEFAULT_LANGUAGE: ${PUBLIC_DEFAULT_LANGUAGE}
     ports:
       - "127.0.0.1:8080:8080"
     depends_on:
       - api
+
+secrets:
+  packages:
+    environment: PACKAGES_TOKEN
 
 volumes:
   postgres:

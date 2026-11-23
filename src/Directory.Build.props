@@ -12,5 +12,8 @@
     <!-- Proprietary: LICENSE. -->
     <Company>Trislab d.o.o.</Company>
     <Copyright>Copyright (c) 2026 Trislab d.o.o. All rights reserved.</Copyright>
+    <!-- Without ICU only the invariant culture may be created by default, and the framework's request localization
+         creates named cultures such as en-US, so the API would not start (the framework's own host sets the same). -->
+    <PredefinedCulturesOnly>false</PredefinedCulturesOnly>
   </PropertyGroup>
 </Project>

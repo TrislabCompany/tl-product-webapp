@@ -1,14 +1,42 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
+  <PropertyGroup>
+    <!-- The mediator's generator warns about a domain event no module handles; the framework turns it off too. -->
+    <NoWarn>$(NoWarn);MSG0005</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Mediator.Abstractions" />
+    <PackageReference Include="Mediator.SourceGenerator" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+
+  <!-- The framework: the building blocks the host needs, and the modules that support single-tenant mode
+       (docs/modules.md). `init-product` keeps the modules a product chooses and removes the rest. -->
+  <ItemGroup Label="framework">
+    <PackageReference Include="Trislab.Framework.Web" />
+    <PackageReference Include="Trislab.Framework.Tenancy" />
+    <PackageReference Include="Trislab.Framework.Eventing" />
+    <PackageReference Include="Trislab.Framework.Persistence" />
+    <PackageReference Include="Trislab.Framework.Shared" />
+  </ItemGroup>
+  <ItemGroup Label="modules">
+    <PackageReference Include="Trislab.Modules.Identity" /> <!-- module:identity -->
+    <PackageReference Include="Trislab.Modules.Identity.Contracts" /> <!-- module:identity -->
+    <PackageReference Include="Trislab.Modules.Auditing" /> <!-- module:auditing -->
+    <PackageReference Include="Trislab.Modules.Auditing.Contracts" /> <!-- module:auditing -->
+    <PackageReference Include="Trislab.Modules.Files" /> <!-- module:files -->
+    <PackageReference Include="Trislab.Modules.Files.Contracts" /> <!-- module:files -->
+    <PackageReference Include="Trislab.Modules.Notifications" /> <!-- module:notifications -->
+    <PackageReference Include="Trislab.Modules.Notifications.Contracts" /> <!-- module:notifications -->
+    <PackageReference Include="Trislab.Modules.Webhooks" /> <!-- module:webhooks -->
+    <PackageReference Include="Trislab.Modules.Webhooks.Contracts" /> <!-- module:webhooks -->
   </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Api.Tests" />
+    <InternalsVisibleTo Include="Integration.Tests" />
   </ItemGroup>
 
 </Project>

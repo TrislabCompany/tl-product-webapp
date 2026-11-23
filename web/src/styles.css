@@ -23,6 +23,12 @@ header {
   text-decoration: none;
 }
 
+.header-end {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .environment {
   padding: 0.1rem 0.5rem;
   border-radius: 999px;

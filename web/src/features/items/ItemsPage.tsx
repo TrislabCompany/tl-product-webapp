@@ -1,9 +1,11 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { createItem, deleteItem, listItems, updateItem, type Item } from "./api";
 
 // The sample feature: a list of items, a form that adds one, and a form per
 // item that renames it. Replace it with the product's own features.
 export default function ItemsPage() {
+  const { t } = useTranslation("items");
   const [items, setItems] = useState<Item[]>();
   const [error, setError] = useState<string>();
   const [name, setName] = useState("");
@@ -44,19 +46,19 @@ export default function ItemsPage() {
 
   return (
     <>
-      <h1>Items</h1>
+      <h1>{t("title")}</h1>
       {error && <p role="alert">{error}</p>}
       <form onSubmit={add} className="add">
-        <label htmlFor="new-item">New item</label>
+        <label htmlFor="new-item">{t("newItem")}</label>
         <input id="new-item" value={name} onChange={(e) => setName(e.target.value)} maxLength={200} required />
         <button type="submit" disabled={!name.trim()}>
-          Add
+          {t("add")}
         </button>
       </form>
       {items === undefined ? (
         !error && <p>Loading…</p>
       ) : items.length === 0 ? (
-        <p>No items yet.</p>
+        <p>{t("empty")}</p>
       ) : (
         <ul className="items">
           {items.map((item) => (
@@ -77,6 +79,7 @@ function ItemRow({
   onSave: (item: Item) => Promise<void>;
   onDelete: (id: number) => Promise<void>;
 }) {
+  const { t } = useTranslation("items");
   const [name, setName] = useState(item.name);
 
   const submit = (event: FormEvent) => {
@@ -88,18 +91,18 @@ function ItemRow({
     <li>
       <input
         type="checkbox"
-        aria-label={`${item.name} done`}
+        aria-label={t("doneLabel", { name: item.name })}
         checked={item.done}
         onChange={(e) => onSave({ ...item, done: e.target.checked })}
       />
       <form onSubmit={submit}>
-        <input aria-label={`Name of ${item.name}`} value={name} onChange={(e) => setName(e.target.value)} maxLength={200} required />
+        <input aria-label={t("nameLabel", { name: item.name })} value={name} onChange={(e) => setName(e.target.value)} maxLength={200} required />
         <button type="submit" disabled={!name.trim() || name.trim() === item.name}>
-          Save
+          {t("save")}
         </button>
       </form>
       <button type="button" onClick={() => onDelete(item.id)}>
-        Delete
+        {t("delete")}
       </button>
     </li>
   );

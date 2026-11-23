@@ -9,7 +9,7 @@ public class PlatformConfigurationTests
     [Fact]
     public void Maps_a_database_url_to_a_connection_string()
     {
-        var connectionString = PlatformConfiguration.ToConnectionString(
+        var connectionString = PlatformConfiguration.ToNpgsqlConnectionString(
             "postgresql://app%40x:p%3Ass@db.example.com:6543/my-db?sslmode=require&channel_binding=require");
 
         var builder = new NpgsqlConnectionStringBuilder(connectionString);
@@ -25,7 +25,7 @@ public class PlatformConfigurationTests
     [Fact]
     public void Uses_port_5432_when_the_url_has_none()
     {
-        var builder = new NpgsqlConnectionStringBuilder(PlatformConfiguration.ToConnectionString("postgres://app:app@postgres/app"));
+        var builder = new NpgsqlConnectionStringBuilder(PlatformConfiguration.ToNpgsqlConnectionString("postgres://app:app@postgres/app"));
 
         Assert.Equal(5432, builder.Port);
     }
@@ -35,7 +35,7 @@ public class PlatformConfigurationTests
     {
         const string connectionString = "Host=localhost;Database=app;Username=app;Password=app";
 
-        Assert.Equal(connectionString, PlatformConfiguration.ToConnectionString(connectionString));
+        Assert.Equal(connectionString, PlatformConfiguration.ToNpgsqlConnectionString(connectionString));
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class PlatformConfigurationTests
         var configuration = Configure(new() { ["DATABASE_URL"] = "postgres://app:app@postgres/app", ["PLATFORM_ENVIRONMENT"] = "dev" });
 
         Assert.Equal("dev", configuration["Platform:Environment"]);
-        Assert.Equal("postgres", new NpgsqlConnectionStringBuilder(configuration.GetConnectionString("Database")).Host);
+        Assert.Equal("postgres", new NpgsqlConnectionStringBuilder(configuration["DatabaseOptions:ConnectionString"]).Host);
     }
 
     [Fact]
@@ -53,6 +53,45 @@ public class PlatformConfigurationTests
         var configuration = Configure(new() { ["DATABASE_URL"] = "postgres://app:app@postgres/app" });
 
         Assert.Equal(PlatformConfiguration.LocalEnvironment, configuration["Platform:Environment"]);
+    }
+
+    [Fact]
+    public void Gives_the_app_context_the_same_connection_string_as_the_framework()
+    {
+        var configuration = Configure(new() { ["DATABASE_URL"] = "postgres://app:app@postgres/app" });
+
+        Assert.Equal(configuration["DatabaseOptions:ConnectionString"], configuration.GetConnectionString("Database"));
+        Assert.Equal("POSTGRESQL", configuration["DatabaseOptions:Provider"]);
+    }
+
+    [Fact]
+    public void Maps_the_secrets_and_the_mail_settings_to_the_framework_options()
+    {
+        var configuration = Configure(new()
+        {
+            ["DATABASE_URL"] = "postgres://app:app@postgres/app",
+            ["JWT_SIGNING_KEY"] = "key",
+            ["SEED_ADMIN_PASSWORD"] = "admin-password",
+            ["SEED_TEST_DATA"] = "true",
+            ["SMTP_USERNAME"] = "smtp-user",
+            ["SMTP_PASSWORD"] = "smtp-password",
+            ["MAIL_FROM"] = "DoNotReply@example.com",
+        });
+
+        Assert.Equal("key", configuration["JwtOptions:SigningKey"]);
+        Assert.Equal("admin-password", configuration["Seed:DefaultAdminPassword"]);
+        Assert.Equal("true", configuration["Seed:TestData"]);
+        Assert.Equal("smtp-user", configuration["MailOptions:Smtp:UserName"]);
+        Assert.Equal("smtp-password", configuration["MailOptions:Smtp:Password"]);
+        Assert.Equal("DoNotReply@example.com", configuration["MailOptions:From"]);
+    }
+
+    [Fact]
+    public void Leaves_an_unset_setting_as_appsettings_has_it()
+    {
+        var configuration = Configure(new() { ["DATABASE_URL"] = "postgres://app:app@postgres/app", ["JWT_SIGNING_KEY"] = " " });
+
+        Assert.Null(configuration["JwtOptions:SigningKey"]);
     }
 
     [Fact]

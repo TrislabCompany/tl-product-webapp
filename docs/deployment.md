@@ -27,7 +27,7 @@ flowchart LR
 
 | Step | Workflow | What happens |
 | --- | --- | --- |
-| Check | `ci.yml`, on every PR and push to `main` | Builds the three images, runs `dotnet test src/App.slnx` and `pnpm --dir web test`, scans the images with Trivy and checks `platform.yaml`. Pushes nothing. The check `ci / ci` must pass before a PR can merge |
+| Check | `ci.yml`, on every PR and push to `main` | Builds the three images, runs `dotnet test src/App.slnx` and `pnpm --dir web test`, scans the images with Trivy and checks `platform.yaml`. Restores the framework's packages with the workflow's token ([section 8](#8-access-to-the-frameworks-packages)). Pushes nothing. The check `ci / ci` must pass before a PR can merge |
 | Deploy | `deploy.yml`, on every push to `main` | Builds the images once, scans them, pushes them to the GitHub Container Registry (GHCR) as `sha-<commit>` with their software bills of materials, and deploys them to every `dev` tier Environment |
 | Release | `release.yml`, on a tag `vX.Y.Z` on a commit of `main` | Builds nothing. Adds the tag to that commit's images, creates the GitHub Release, and deploys them to every `release` tier Environment |
 | Promote | `promote.yml`, by hand with a version and an Environment | Checks that the version runs healthy in a `release` tier Environment, waits for the reviewers, and deploys the same images. Rolling back is promoting the previous version |
@@ -156,3 +156,17 @@ Every deploy is a GitHub deployment of its Environment, so the repository's **De
 ```bash
 gh api "repos/{owner}/{repo}/deployments?per_page=20" --jq '.[] | [.environment, .ref, .created_at] | @tsv'
 ```
+
+## 8. Access to the framework's packages
+
+The API and the front end restore the packages of `tl-framework` from GitHub Packages (`nuget.config`, `web/.npmrc`), and the packages are private, so every build needs a token that may read them:
+
+| Where | Token | How it gets there |
+| --- | --- | --- |
+| `ci / ci` and `deploy.yml` | The workflow's `GITHUB_TOKEN`, passed as `packages-token` to the reusable workflow | The reusable workflow gives the test command `PACKAGES_TOKEN` (`nuget.config` reads it; the command writes it to `~/.npmrc` for pnpm) and every image build the BuildKit secret `packages` (`RUN --mount=type=secret,id=packages,env=PACKAGES_TOKEN` in the three Dockerfiles). No layer keeps it |
+| A developer's machine | A personal token with `read:packages` | [getting-started.md](getting-started.md#1-what-you-need) |
+| Renovate | Its own | `renovate.json` |
+
+**The repository must be allowed to read each package.** A package of the organisation lets the repositories named under its *Manage Actions access* read it with `GITHUB_TOKEN`. Until this repository is named there, for every `Trislab.*` NuGet package and `@trislabcompany/framework-ui`, the restore answers 401 and `ci / ci` fails at the restore. An organisation owner sets it once per package; it needs no change in this repository. A repository created from the template needs the same access, which the platform's onboarding must grant, or the organisation must pass an organisation secret with `read:packages` as `packages-token` instead.
+
+`release.yml` builds nothing, so it needs no token.

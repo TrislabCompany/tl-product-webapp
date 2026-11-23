@@ -4,14 +4,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.Features.Items;
 
-/// <summary>The sample feature: list, add, change and delete items, under /api/items.</summary>
+/// <summary>
+/// The sample feature: list, add, change and delete items, under /api/items. The framework requires a signed-in
+/// user for every endpoint unless it opts out, so a public part of the product says so, as the sample does.
+/// </summary>
 public static class ItemEndpoints
 {
     public sealed record ItemRequest(string Name, bool Done = false);
 
     public static void MapItems(this IEndpointRouteBuilder api)
     {
-        var items = api.MapGroup("/items").WithTags("Items");
+        var items = api.MapGroup("/items").WithTags("Items").AllowAnonymous();
 
         items.MapGet("/", async (AppDbContext db, CancellationToken ct) =>
             await db.Items.AsNoTracking().OrderBy(i => i.Id).ToListAsync(ct));

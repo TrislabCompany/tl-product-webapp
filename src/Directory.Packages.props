@@ -4,6 +4,30 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
+  <PropertyGroup>
+    <!-- One version for every Trislab.* package: the framework's (tl-framework, docs/packages.md). Raise it only
+         to a version that was published; Renovate opens the pull request. -->
+    <TrislabFrameworkVersion>0.2.0</TrislabFrameworkVersion>
+  </PropertyGroup>
+  <ItemGroup Label="Trislab framework">
+    <PackageVersion Include="Trislab.Framework.Web" Version="$(TrislabFrameworkVersion)" />
+    <PackageVersion Include="Trislab.Framework.Tenancy" Version="$(TrislabFrameworkVersion)" />
+    <PackageVersion Include="Trislab.Framework.Eventing" Version="$(TrislabFrameworkVersion)" />
+    <PackageVersion Include="Trislab.Framework.Persistence" Version="$(TrislabFrameworkVersion)" />
+    <PackageVersion Include="Trislab.Framework.Shared" Version="$(TrislabFrameworkVersion)" />
+    <PackageVersion Include="Trislab.Modules.Identity" Version="$(TrislabFrameworkVersion)" /> <!-- module:identity -->
+    <PackageVersion Include="Trislab.Modules.Identity.Contracts" Version="$(TrislabFrameworkVersion)" /> <!-- module:identity -->
+    <PackageVersion Include="Trislab.Modules.Auditing" Version="$(TrislabFrameworkVersion)" /> <!-- module:auditing -->
+    <PackageVersion Include="Trislab.Modules.Auditing.Contracts" Version="$(TrislabFrameworkVersion)" /> <!-- module:auditing -->
+    <PackageVersion Include="Trislab.Modules.Files" Version="$(TrislabFrameworkVersion)" /> <!-- module:files -->
+    <PackageVersion Include="Trislab.Modules.Files.Contracts" Version="$(TrislabFrameworkVersion)" /> <!-- module:files -->
+    <PackageVersion Include="Trislab.Modules.Notifications" Version="$(TrislabFrameworkVersion)" /> <!-- module:notifications -->
+    <PackageVersion Include="Trislab.Modules.Notifications.Contracts" Version="$(TrislabFrameworkVersion)" /> <!-- module:notifications -->
+    <PackageVersion Include="Trislab.Modules.Webhooks" Version="$(TrislabFrameworkVersion)" /> <!-- module:webhooks -->
+    <PackageVersion Include="Trislab.Modules.Webhooks.Contracts" Version="$(TrislabFrameworkVersion)" /> <!-- module:webhooks -->
+    <PackageVersion Include="Mediator.Abstractions" Version="3.0.2" />
+    <PackageVersion Include="Mediator.SourceGenerator" Version="3.0.2" />
+  </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.15" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.15" />

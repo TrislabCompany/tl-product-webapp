@@ -44,3 +44,5 @@ The trace id is the correlation id. It comes from the W3C `traceparent` header w
 ## Format
 
 The platform's log contract (JSON lines, `X-Correlation-ID`, ProblemDetails `traceId`; ADR 0062, the Logs section of tl-platform's `stamps/aca-app/README.md`) comes from the tl-framework packages, not from code in this template. Don't write a log formatter or correlation middleware here.
+
+What this repository does: `AddTrislabPlatform` in `Program.cs` starts the framework's Serilog logging, with the request enrichment, the trace id and the `traceId` and `X-Correlation-ID` of the framework's error handler; `src/Api/appsettings.json` configures the sinks and levels, and `appsettings.Production.json` writes the console as JSON lines (Serilog's compact JSON formatter, from the packages) in every deployed Environment. Local runs in `Development` keep the readable console. Where the framework's output differs from the contract (field names, `stamp`, `tenant`), the fix is a change in `tl-framework`, then a framework upgrade here; do not patch it in this repository.

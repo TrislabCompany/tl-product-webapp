@@ -55,6 +55,36 @@ public class ApiTests(ApiFactory factory)
     }
 
     [Fact]
+    public async Task Refuses_a_request_without_sign_in_unless_the_endpoint_is_public()
+    {
+        // The framework protects every endpoint by default: the sample's items and the health info opt out.
+        var response = await _client.GetAsync(new Uri("/api/v1/identity/users", UriKind.Relative), Ct);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Signs_the_first_administrator_in_without_a_tenant_header()
+    {
+        // Single-tenant mode: the server resolves the one tenant, so sign-in takes no `tenant` header.
+        var response = await _client.PostAsJsonAsync(
+            "/api/v1/identity/token/issue", new { email = ApiFactory.AdminEmail, password = ApiFactory.AdminPassword }, Ct);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var token = await response.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>(Ct);
+        Assert.False(string.IsNullOrEmpty(token.GetProperty("accessToken").GetString()));
+    }
+
+    [Fact]
+    public async Task Signs_the_demo_user_in_with_the_test_data()
+    {
+        var response = await _client.PostAsJsonAsync(
+            "/api/v1/identity/token/issue", new { email = "user@example.com", password = "Password123!" }, Ct);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
     public async Task Rejects_an_item_without_a_name()
     {
         var response = await _client.PostAsJsonAsync("/api/items", new { name = " " }, Ct);

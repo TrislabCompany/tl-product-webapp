@@ -4,11 +4,11 @@ using Npgsql;
 namespace Api.Platform;
 
 /// <summary>
-/// The one place that knows the platform's setting names
-/// (13-app-templates.md section 6.1 in tl-cloud-infrastructure). It turns them
-/// into the configuration keys the rest of the app reads, so nothing else reads
-/// an environment variable. Add a mapping here for each setting or secret the
-/// product adds, such as REDIS_URL when its stamp adds a cache.
+/// The one place that knows the platform's setting names (13-app-templates.md section 6.1 in
+/// tl-cloud-infrastructure). It turns them into the options the framework's building blocks read, so nothing
+/// else reads an environment variable. A setting the stamp does not set leaves its option as appsettings.json
+/// has it, and the building block falls back to what needs no service. Add a mapping here for each setting
+/// or secret the product adds. The migrator compiles this file through its reference to the API.
 /// </summary>
 public static class PlatformConfiguration
 {
@@ -16,35 +16,49 @@ public static class PlatformConfiguration
     public const string LocalEnvironment = "local";
 
     /// <summary>
-    /// Maps DATABASE_URL to ConnectionStrings:Database, and PLATFORM_ENVIRONMENT
-    /// to Platform:Environment. Throws when DATABASE_URL is unset: neither the
-    /// API nor the migrator runs without Postgres.
+    /// Adds the options mapped from the platform's settings. Call it before anything reads the options;
+    /// configuration added after it, such as a test host's, still wins. Throws when DATABASE_URL is unset:
+    /// neither the API nor the migrator runs without Postgres.
     /// </summary>
     public static void AddPlatformSettings(this IConfigurationManager configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
-        var databaseUrl = configuration["DATABASE_URL"];
-        if (string.IsNullOrWhiteSpace(databaseUrl))
+        if (Value(configuration, "DATABASE_URL") is not { } databaseUrl)
         {
             throw new InvalidOperationException(
                 "DATABASE_URL is not set. The stamp sets it; locally, .env sets it for docker compose (docs/configuration.md).");
         }
 
-        var environment = configuration["PLATFORM_ENVIRONMENT"];
-        configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var settings = new Dictionary<string, string?>
         {
-            ["ConnectionStrings:Database"] = ToConnectionString(databaseUrl),
-            ["Platform:Environment"] = string.IsNullOrWhiteSpace(environment) ? LocalEnvironment : environment,
-        });
+            ["Platform:Environment"] = Value(configuration, "PLATFORM_ENVIRONMENT") ?? LocalEnvironment,
+            ["DatabaseOptions:Provider"] = "POSTGRESQL",
+            ["DatabaseOptions:ConnectionString"] = ToNpgsqlConnectionString(databaseUrl),
+            // The app's own context (Data/AppDbContext) reads the same connection string.
+            ["ConnectionStrings:Database"] = ToNpgsqlConnectionString(databaseUrl),
+        };
+
+        Map(settings, configuration, "JWT_SIGNING_KEY", "JwtOptions:SigningKey");
+        Map(settings, configuration, "HANGFIRE_PASSWORD", "HangfireOptions:Password");
+        Map(settings, configuration, "SEED_ADMIN_PASSWORD", "Seed:DefaultAdminPassword");
+        Map(settings, configuration, "SEED_TEST_DATA", "Seed:TestData");
+        Map(settings, configuration, "REDIS_URL", "CachingOptions:Redis");
+        // Mail goes through Azure Communication Services Email over SMTP (docs/configuration.md).
+        Map(settings, configuration, "SMTP_HOST", "MailOptions:Smtp:Host");
+        Map(settings, configuration, "SMTP_USERNAME", "MailOptions:Smtp:UserName");
+        Map(settings, configuration, "SMTP_PASSWORD", "MailOptions:Smtp:Password");
+        Map(settings, configuration, "MAIL_FROM", "MailOptions:From");
+
+        configuration.AddInMemoryCollection(settings);
     }
 
     /// <summary>
-    /// Turns a URL such as postgresql://user:password@host:5432/db?sslmode=require,
-    /// the form the stamp's DATABASE_URL has, into an Npgsql connection string.
-    /// A value that is already a connection string is returned as it is.
+    /// Turns a URL such as postgresql://user:password@host:5432/db?sslmode=require, the form the stamp's
+    /// DATABASE_URL has, into an Npgsql connection string. A value that is already a connection string is
+    /// returned as it is.
     /// </summary>
-    internal static string ToConnectionString(string databaseUrl)
+    internal static string ToNpgsqlConnectionString(string databaseUrl)
     {
         if (!Uri.TryCreate(databaseUrl, UriKind.Absolute, out var uri) || uri.Scheme is not ("postgres" or "postgresql"))
         {
@@ -79,5 +93,19 @@ public static class PlatformConfiguration
         }
 
         return builder.ConnectionString;
+    }
+
+    private static void Map(Dictionary<string, string?> settings, IConfiguration configuration, string name, string key)
+    {
+        if (Value(configuration, name) is { } value)
+        {
+            settings[key] = value;
+        }
+    }
+
+    private static string? Value(IConfiguration configuration, string name)
+    {
+        var value = configuration[name];
+        return string.IsNullOrWhiteSpace(value) ? null : value;
     }
 }

@@ -1,0 +1,75 @@
+name: template-init
+
+# Tests the init path on every change to the template: copies the repository to a
+# temporary folder, runs `node scripts/init-product.mjs` there with each choice
+# below, then builds the result and runs its unit tests and the front end's checks.
+# So a change that breaks init-product, or that its output can't build, fails here
+# before a release carries it to the next product (docs/modules.md#3-delete-a-module).
+# The integration tests need Docker and the template's own `ci` runs them with every
+# module; here the API is built and its unit tests run.
+# Template-only: never copied to a product repository, and deleted by init-product
+# like the other template-only files.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: template-init-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  init:
+    name: init (${{ matrix.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: only-identity, modules: none }
+          - { name: every-module, modules: 'auditing,files,notifications,webhooks' }
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: read
+    env:
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
+      PACKAGES_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          package-manager-cache: false
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      - name: Copy the repository and initialise it
+        run: |
+          set -euo pipefail
+          corepack enable
+          echo "//npm.pkg.github.com/:_authToken=$PACKAGES_TOKEN" >> ~/.npmrc
+          # init-product reads the manifest from the web/ dependencies, so install first, then copy.
+          pnpm --dir web install --frozen-lockfile
+          mkdir /tmp/init-product
+          git ls-files -z --cached --others --exclude-standard | xargs -0 -I{} cp --parents {} /tmp/init-product/
+          cp -r web/node_modules /tmp/init-product/web/node_modules
+          cd /tmp/init-product
+          git init -q && git add -A
+          node scripts/init-product.mjs --modules '${{ matrix.modules }}' --name "Init test"
+
+      - name: Build and test the product
+        working-directory: /tmp/init-product
+        run: |
+          set -euo pipefail
+          dotnet build src/App.slnx --nologo
+          dotnet test src/Tests/Api.Tests --nologo
+          pnpm --dir web test

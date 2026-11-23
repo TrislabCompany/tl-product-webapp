@@ -1,0 +1,11 @@
+{
+  "title": "Postavke",
+  "newItem": "Nova postavka",
+  "add": "Dodaj",
+  "loading": "Nalaganje …",
+  "empty": "Še ni nobene postavke.",
+  "doneLabel": "{{name}} je opravljeno",
+  "nameLabel": "Ime postavke {{name}}",
+  "save": "Shrani",
+  "delete": "Izbriši"
+}
