@@ -56,6 +56,7 @@ jobs:
         run: |
           set -euo pipefail
           corepack enable
+          corepack install --global "$(jq -r .packageManager web/package.json)"
           echo "//npm.pkg.github.com/:_authToken=$PACKAGES_TOKEN" >> ~/.npmrc
           # init-product reads the manifest from the web/ dependencies, so install first, then copy.
           pnpm --dir web install --frozen-lockfile
