@@ -1,0 +1,11 @@
+{
+  "title": "Items",
+  "newItem": "New item",
+  "add": "Add",
+  "loading": "Loading…",
+  "empty": "No items yet.",
+  "doneLabel": "{{name}} done",
+  "nameLabel": "Name of {{name}}",
+  "save": "Save",
+  "delete": "Delete"
+}

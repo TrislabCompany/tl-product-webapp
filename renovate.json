@@ -1,4 +1,4 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>TrislabCompany/tl-platform//renovate/default"]
+  "extends": ["github>TrislabCompany/tl-platform//renovate/default", "github>TrislabCompany/tl-framework//renovate/framework"]
 }

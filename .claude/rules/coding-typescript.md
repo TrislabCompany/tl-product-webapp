@@ -25,6 +25,12 @@ Checked by: `pnpm --dir web test`, which runs `tsc --noEmit` (strict), ESLint (`
 - No `console.log` in committed code. A `console.warn` or `console.error` only where the user can't be told, with a short `<area>: <what>` message and no personal data.
 - When the API returns ProblemDetails, show its `traceId` with the error, so the user can quote it (`logging.md`).
 
+## Texts
+
+- Every text on screen goes in `web/src/locales/en-US/<namespace>.json` and the same key in `sl-SI/`, and is read with `useTranslation(<namespace>)` and `t()`. No literal text in JSX or in an attribute such as `aria-label`. `web/src/i18n.test.ts` fails on a key one language lacks or on different `{{placeholders}}`; the keys are typed against the English catalogs (`i18next.d.ts`), so `tsc` fails on a key that does not exist.
+- A new namespace is added to `eagerCatalogs` in `web/src/i18n.ts` and to both language folders. Dates and numbers go through the formatters of `@trislabcompany/framework-ui` (`formatDate`, `formatNumber`, `formatMoney`), in the language on screen; the API sends values, never formatted text.
+- `@trislabcompany/framework-ui` is the framework's package: a missing feature or a bug in it is a change in `tl-framework`, not a copy here.
+
 ## Naming
 
 | Thing | Shape | Example |

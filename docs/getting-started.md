@@ -13,6 +13,15 @@ How to run the app on your machine, and how to run the tests.
 
 Docker is enough to run the app. The SDK, Node and pnpm are needed to work on the code and to run the tests.
 
+**A token for the framework's packages.** The API and the front end are built on the packages of `tl-framework`, which are on GitHub Packages, and GitHub Packages asks for a token even to read one. Create a personal access token (classic) with `read:packages`; your account must be allowed to read the organisation's packages. Then:
+
+| For | Do |
+| --- | --- |
+| `dotnet`, and `docker compose` | `export PACKAGES_TOKEN=<token>` in your shell. `nuget.config` reads it; Compose passes it to the image builds as a build secret |
+| `pnpm` | Add the line `//npm.pkg.github.com/:_authToken=<token>` to `~/.npmrc`. pnpm trusts a token only there, not in the repository's `web/.npmrc`, which names only the registry |
+
+Never put the token in a file of the repository.
+
 ## 2. Run the whole app with Docker Compose
 
 This is the everyday local run. It builds the three images from their Dockerfiles, as the pipeline does, and starts them with a Postgres 17 container:
@@ -22,14 +31,16 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Open <http://localhost:8080>. You see the sample: a list of items you can add, rename, tick and delete.
+Open <http://localhost:8080>. You see the sample: a list of items you can add, rename, tick and delete. Switch the language in the header between English and Slovenian.
+
+`.env.example` turns on the test data, so the app also has two users: the first administrator, `admin@example.com` with the password `SEED_ADMIN_PASSWORD` of your `.env`, and a demo user, `user@example.com` with the public password `Password123!`. Sign in through the API: `POST /api/v1/identity/token/issue` with `{"email": "…", "password": "…"}`.
 
 The services are named like the apps in `platform.yaml` and the stamp's database:
 
 | Service | What it is | Port on your machine |
 | --- | --- | --- |
 | `postgres` | Postgres 17, the same image as a dev stamp | `5432` |
-| `migrator` | Applies the migrations and the seed data, then exits. `api` starts only once it has finished | None |
+| `migrator` | Applies the migrations, the first administrator and the test data, then exits. `api` starts only once it has finished | None |
 | `api` | The .NET API, at `http://api:8080` inside Compose | None: reach it through `web` |
 | `web` | nginx with the front end, proxying `/api` to `api` | `8080` |
 
@@ -55,7 +66,7 @@ pnpm --dir web install
 pnpm --dir web dev                    # http://localhost:5173
 ```
 
-`dotnet run` takes `DATABASE_URL` from `src/Api/Properties/launchSettings.json`, which points at the Compose Postgres. The Vite dev server reloads the page on every change, and sends `/api` to `http://localhost:5080`, as nginx sends it to `api` in the image; set `API_UPSTREAM` to use another address. In the dev server `/config.json` doesn't exist, so every value in it is unset.
+`dotnet run` takes `DATABASE_URL` from `src/Api/Properties/launchSettings.json`, which points at the Compose Postgres, and the signing key, the first administrator's password and the front end's address from `src/Api/appsettings.Development.json`. The Vite dev server reloads the page on every change, and sends `/api` to `http://localhost:5080`, as nginx sends it to `api` in the image; set `API_UPSTREAM` to use another address. In the dev server `/config.json` doesn't exist, so every value in it is unset.
 
 ## 4. Run the tests
 
@@ -69,8 +80,8 @@ These are the commands `ci / ci` runs:
 | Tests | Where | What they check |
 | --- | --- | --- |
 | Unit tests | `src/Tests/Api.Tests` | Code without a database, such as the mapping of the platform's settings |
-| Integration tests | `src/Tests/Integration.Tests` | The API's endpoints against a real Postgres 17. The tests start a throw-away container themselves, so Docker must run |
-| Front end | `web/src/**/*.test.tsx`, with `pnpm --dir web test` | The type check, the linter, and the components with Vitest |
+| Integration tests | `src/Tests/Integration.Tests` | The API's endpoints, after the real migrator, against a real Postgres 17: sign-in in single-tenant mode, the protected and the public endpoints. The tests start a throw-away container themselves, so Docker must run |
+| Front end | `web/src/**/*.test.ts(x)`, with `pnpm --dir web test` | The type check, the linter, the template manifest check, the components and the English and Slovenian texts with Vitest, and the tests of the scripts |
 
 `ci / ci` also builds the three images, scans them with Trivy and checks `platform.yaml`. To build one image yourself, as the pipeline does:
 

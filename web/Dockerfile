@@ -7,8 +7,11 @@ FROM node:22.23.4-alpine@sha256:fe4f6d74e20370acb04ad889077d14d0f64a9c8ea6a42bc6
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 WORKDIR /app
 # pnpm comes from Corepack, at the version in packageManager of package.json.
-COPY package.json pnpm-lock.yaml ./
-RUN corepack enable && pnpm install --frozen-lockfile
+# @trislabcompany/framework-ui comes from GitHub Packages, which asks for a token: the build gets it as the
+# BuildKit secret `packages` (docker build --secret id=packages,env=PACKAGES_TOKEN). pnpm trusts a token only
+# in ~/.npmrc, so the same RUN writes it there, installs and deletes it: no layer keeps it.
+COPY package.json pnpm-lock.yaml .npmrc ./
+RUN --mount=type=secret,id=packages,env=PACKAGES_TOKEN     corepack enable     && echo "//npm.pkg.github.com/:_authToken=${PACKAGES_TOKEN}" > ~/.npmrc     && pnpm install --frozen-lockfile     && rm ~/.npmrc
 COPY . .
 RUN pnpm build
 

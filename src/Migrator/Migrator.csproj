@@ -8,4 +8,10 @@
     <ProjectReference Include="..\Api\Api.csproj" />
   </ItemGroup>
 
+  <!-- The same settings as the API, so the tenancy and the options stay in step. -->
+  <ItemGroup>
+    <None Include="..\Api\appsettings.json" Link="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Api\appsettings.Development.json" Link="appsettings.Development.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\Api\appsettings.Development.json')" />
+  </ItemGroup>
+
 </Project>

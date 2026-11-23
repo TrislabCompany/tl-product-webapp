@@ -18,15 +18,18 @@ Every image runs as a non-root user. Both apps listen on port 8080 and answer `/
 
 The data is in Postgres, which comes from the stamp, not from this repository. In a dev stamp it is a container next to the apps, `ca-<stamp>-postgres`, which keeps its data only while it runs: after a restart, the migrator and the seed data build it again. Where the stamp chooses a managed service, such as Neon, the data stays. Either way the app gets the same setting, `DATABASE_URL` ([configuration.md](configuration.md)).
 
-The API reads and writes through EF Core (`src/Api/Data/AppDbContext.cs`). The schema is the EF Core migrations in `src/Api/Data/Migrations/`.
+The framework's modules keep their data in Postgres too, each in a schema of its own (`identity`, `auditing`, and so on), and ship their own migrations in their packages. The app's own data is read and written through EF Core (`src/Api/Data/AppDbContext.cs`), in the `public` schema; its schema is the EF Core migrations in `src/Api/Data/Migrations/`. Every row the framework writes is stamped with the one tenant of the app ([section 6](#6-the-framework)).
 
 ## 3. Migrations
 
 `migrator` runs before `api`, in every replica of every new revision:
 
-1. It takes a Postgres advisory lock, so only one replica migrates at a time.
-2. It applies the migrations that are missing, then the seed data (`src/Api/Data/SeedData.cs`), which adds sample items only to an empty table.
-3. It exits. Then `api` starts.
+1. It waits for Postgres, then takes a Postgres advisory lock, so only one replica migrates at a time.
+2. It applies the migrations of every registered module, then each module's seed data: the roles, and the first administrator (`TenancyOptions:SingleTenant:AdminEmail`, with the password `SEED_ADMIN_PASSWORD`). Then it applies the app's own migrations.
+3. Only where `SEED_TEST_DATA` is `true`, it adds the test data (`src/Migrator/TestDataSeeder.cs`): a demo user and the sample items. The framework's `seed-demo` is refused in single-tenant mode, because it creates demo tenants, so the app has its own seeder. Never set it where real people sign in.
+4. It exits. Then `api` starts.
+
+The framework's own migrator is a host of its repository, not a package, so this one is the app's, on the same building blocks, for single-tenant mode only.
 
 The other replicas wait for the lock, find nothing left to do and exit. When the migrator fails, the new revision never becomes ready, and the previous revision keeps serving. So a revision never serves on a database it doesn't know.
 
@@ -48,8 +51,19 @@ flowchart LR
 - nginx passes every request under `/api` to `api`, at `http://ca-<stamp>-api` inside the stamp, with the path unchanged. The page and the API share one origin, so the API needs no CORS settings.
 - `api` answers from Postgres.
 
-The template has no sign-in of its own. A product adds the sign-in it needs before its first production stamp, because production hostnames are public.
+Every endpoint of the API needs a signed-in user unless it opts out with `.AllowAnonymous()`: the sample's items and `/api/health/info` do, so the public part of a product is explicit. Sign-in is the framework's Identity module: `POST /api/v1/identity/token/issue` with an e-mail and a password, with no tenant header. Production hostnames are public, so a product decides which endpoints stay anonymous before its first production stamp.
 
 ## 5. The front end
 
-`web/src/main.tsx` loads `/config.json` first, then renders the app. `App.tsx` holds the routes and the layout; each feature is a folder in `web/src/features/`, and calls the API at the relative path `/api`. The build writes `web/dist/`, which the image serves; hashed files under `/assets/` are cached for a year.
+`web/src/main.tsx` loads `/config.json` first, starts i18n with the deployment's default language, then renders the app. `App.tsx` holds the routes and the layout; each feature is a folder in `web/src/features/`, and calls the API at the relative path `/api`. The build writes `web/dist/`, which the image serves; hashed files under `/assets/` are cached for a year.
+
+The front end is built on `@trislabcompany/framework-ui`, the framework's npm package: `web/src/i18n.ts` sets up i18next with `createFrameworkI18n`, and the header has its `LanguageSwitch`. Every text is in English (`en-US`) and Slovenian (`sl-SI`): English is in the main bundle, Slovenian is one lazy chunk, loaded when chosen. A text is added to both `web/src/locales/en-US/<namespace>.json` and `sl-SI/`, and read with `t()`; `web/src/i18n.test.ts` fails on a key one language lacks or on different `{{placeholders}}`.
+
+## 6. The framework
+
+The API is a modular monolith on the packages of `tl-framework`, one version for all of them (`TrislabFrameworkVersion` in `src/Directory.Packages.props`). `Program.cs` is the framework's host: `AddTrislabTenancy(t => t.UseSingleTenant())` first, then `AddTrislabPlatform`, the outbox (`AddEventingCore`) and `AddModules`; `UseTrislabTenancy` and `UseTrislabPlatform` build the pipeline. The modules and what each does are in [modules.md](modules.md).
+
+- **Single tenant.** The app has one tenant, set in `TenancyOptions:SingleTenant` ([configuration.md](configuration.md#2a-tenancy-mode)): no tenant catalog, sign-up, plans or quotas, and a request names no tenant. The data is still stamped with the tenant, so the module code is the same as in a SaaS product.
+- **Logs and correlation** come from the framework's logging ([.claude/rules/logging.md](../.claude/rules/logging.md)); this repository only configures it.
+- **Mail** goes through Azure Communication Services Email over SMTP, with the framework's Mailing sender ([configuration.md](configuration.md#6-mail-through-azure-communication-services)).
+- **Background jobs** (Hangfire, on Postgres) run in the API.

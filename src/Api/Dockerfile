@@ -2,15 +2,17 @@
 # chiseled ASP.NET runtime: no shell, no package manager, a non-root user, and
 # the API on port 8080. Both base images are pinned by digest; Renovate bumps
 # them from roadmap phase 12 on. The build context is the repository root.
+# The Trislab packages come from GitHub Packages, which asks for a token: the build gets it as the BuildKit
+# secret `packages` (docker build --secret id=packages,env=PACKAGES_TOKEN), and no layer keeps it.
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0.404-noble@sha256:fe0fd4e93bd2fbb47c883b7a6369e5c8d3db8bf01cdc5981f6ee35fbdf3ff4fb AS build
 WORKDIR /repo
 # Restores first, from the project files only, so the layer is reused while
 # the dependencies stay the same.
-COPY global.json ./
+COPY global.json nuget.config ./
 COPY src/Directory.Build.props src/Directory.Packages.props src/
 COPY src/Api/Api.csproj src/Api/
-RUN dotnet restore src/Api/Api.csproj
+RUN --mount=type=secret,id=packages,env=PACKAGES_TOKEN dotnet restore src/Api/Api.csproj
 COPY src/Api/ src/Api/
 RUN dotnet publish src/Api/Api.csproj --configuration Release --no-restore --output /app
 

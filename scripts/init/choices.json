@@ -1,0 +1,11 @@
+{
+  "_comment": "What init-product may remove. A line of a file that ends with `module:<name>` or `feature:<name>` belongs to that choice; `paths` are the files that belong only to it. `needs` names the modules a choice cannot work without. The template-only files are not listed here: they come from template-manifest.yaml.",
+  "modules": {
+    "identity": { "required": true, "paths": [] },
+    "auditing": { "paths": [] },
+    "files": { "paths": [] },
+    "notifications": { "paths": [] },
+    "webhooks": { "paths": [] }
+  },
+  "features": {}
+}

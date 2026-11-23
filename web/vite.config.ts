@@ -14,5 +14,8 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
+    setupFiles: ["./src/test-setup.ts"],
+    // The framework UI's build has extensionless relative imports, which Node cannot load as it is; Vite resolves them.
+    server: { deps: { inline: [/@trislabcompany/] } },
   },
 });

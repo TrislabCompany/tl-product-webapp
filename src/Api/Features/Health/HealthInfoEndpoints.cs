@@ -17,5 +17,6 @@ public static class HealthInfoEndpoints
     public static void MapHealthInfo(this IEndpointRouteBuilder api) =>
         api.MapGet("/health/info", (IConfiguration configuration) =>
             new HealthInfo("api", Version, configuration["Platform:Environment"]!))
-            .WithTags("Health");
+            .WithTags("Health")
+            .AllowAnonymous();
 }

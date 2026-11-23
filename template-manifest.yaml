@@ -1,0 +1,93 @@
+# Every path of this template and its ownership (docs/template-releases.md).
+# update-from-template reads this file at the template release it updates to:
+#   platform       copied over the product's file on every update; the product never edits it
+#   shared         the template's change is 3-way merged into the product's file; conflicts are listed
+#   product        never touched; the template's change is shown as a suggestion
+#   template-only  never copied to a product repository; `node scripts/init-product.mjs` deletes it
+#   sample         the template's sample content: shown in the template, deleted by init-product,
+#                  never copied to a product repository (none today: the sample feature, items, is the
+#                  product's starting point and stays `product`)
+# The first rule whose pattern matches a path wins. `*` matches within one folder, `**` across folders.
+# So the rules of a narrower class come before `.github/workflows/*`, `scripts/**`, `src/**` and the others.
+# `pnpm --dir web test` fails when a tracked file matches no rule (scripts/check-template-manifest.mjs).
+template: template-webapp
+
+# The template's skills, in .agents/skills/<name>/. Any other folder there is a project skill,
+# which an update never reads, changes or deletes. Each skill's front matter repeats its ownership.
+# Each skill also has a pointer, .claude/skills/<name>/SKILL.md, with the same front matter:
+# Claude Code finds skills only there. It has the skill's ownership.
+skills:
+  release: platform
+  update-from-template: platform
+  release-template: template-only
+  init-product: template-only
+
+paths:
+  # Maintaining the template itself
+  - { path: template-manifest.yaml, ownership: template-only }
+  # The init script and its input: `node scripts/init-product.mjs` runs once, in the repository's first PR
+  - { path: scripts/init-product.mjs, ownership: template-only }
+  - { path: scripts/init-product.test.mjs, ownership: template-only }
+  - { path: scripts/init/**, ownership: template-only }
+  - { path: .agents/skills/release-template/**, ownership: template-only }
+  - { path: .claude/skills/release-template/**, ownership: template-only }
+  - { path: .agents/skills/init-product/**, ownership: template-only }
+  - { path: .claude/skills/init-product/**, ownership: template-only }
+  - { path: docs/template-releases.md, ownership: template-only }
+  - { path: docs/upgrading/template-*.md, ownership: template-only }
+  - { path: .github/workflows/template-release.yml, ownership: template-only }
+  - { path: .github/workflows/template-init.yml, ownership: template-only }
+
+  # The platform's part: the same in every product repository, never edited there.
+  # The workflows call the platform's reusable workflows; the platform schema is theirs.
+  - { path: .github/workflows/*, ownership: platform }
+  - { path: .agents/skills/release/**, ownership: platform }
+  - { path: .agents/skills/update-from-template/**, ownership: platform }
+  - { path: .claude/skills/release/**, ownership: platform }
+  - { path: .claude/skills/update-from-template/**, ownership: platform }
+  - { path: docs/upgrading/README.md, ownership: platform }
+  - { path: CLAUDE.md, ownership: platform }
+  - { path: .claude/settings.json, ownership: platform }
+  - { path: renovate.json, ownership: platform }
+  - { path: platform.schema.json, ownership: platform }
+  - { path: scripts/check-template-manifest.mjs, ownership: platform }
+  - { path: scripts/check-template-manifest.test.mjs, ownership: platform }
+
+  # The product's own from the first day
+  - { path: README.md, ownership: product }
+  - { path: .github/CODEOWNERS, ownership: product }
+  - { path: LICENSE, ownership: platform }
+  - { path: .trivyignore, ownership: product }
+  - { path: platform.yaml, ownership: product }
+  - { path: docs/brief.md, ownership: product }
+  - { path: web/pnpm-lock.yaml, ownership: product }
+  # The sample feature, the product's starting point: its endpoints, its context and migrations, its page
+  - { path: src/Api/Features/Items/**, ownership: product }
+  - { path: src/Api/Data/**, ownership: product }
+  - { path: web/src/features/**, ownership: product }
+  # What the front end shares with every product; the rest of web/src/ is the product's
+  - { path: web/src/lib/**, ownership: shared }
+  - { path: web/src/i18n.ts, ownership: shared }
+  - { path: web/src/i18n.test.ts, ownership: shared }
+  - { path: web/src/i18next.d.ts, ownership: shared }
+  - { path: web/src/test-setup.ts, ownership: shared }
+  - { path: web/src/**, ownership: product }
+  - { path: web/public/**, ownership: product }
+  - { path: web/index.html, ownership: product }
+
+  # Shared: the template's starting point, which the product may adapt.
+  - { path: AGENTS.md, ownership: shared }
+  - { path: .claude/rules/**, ownership: shared }
+  - { path: .github/pull_request_template.md, ownership: shared }
+  - { path: docs/**, ownership: shared }
+  - { path: scripts/**, ownership: shared }
+  - { path: src/**, ownership: shared }
+  - { path: web/**, ownership: shared }
+  - { path: nuget.config, ownership: shared }
+  - { path: global.json, ownership: shared }
+  - { path: docker-compose.yml, ownership: shared }
+  - { path: .env.example, ownership: shared }
+  - { path: .dockerignore, ownership: shared }
+  - { path: .editorconfig, ownership: shared }
+  - { path: .gitattributes, ownership: shared }
+  - { path: .gitignore, ownership: shared }
