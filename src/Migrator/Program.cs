@@ -1,5 +1,6 @@
 using System.Reflection;
 using Api.Data;
+using Api.Features.Staff; // feature:staff-area
 using Api.Platform;
 using Finbuckle.MultiTenant.Abstractions;
 using Microsoft.EntityFrameworkCore;
@@ -80,6 +81,7 @@ var moduleAssemblies = new Assembly[]
     typeof(WebhooksModule).Assembly, // module:webhooks
 };
 
+StaffPermissions.Register(); // feature:staff-area
 builder.AddTrislabTenancy(t => t.UseSingleTenant());
 moduleAssemblies = ModuleLoader.SelectSupported(TenancyOptions.ReadMode(builder.Configuration), moduleAssemblies);
 
@@ -137,6 +139,7 @@ try
     log.LogInformation("Migrating the modules for the tenant {TenantId}", tenant.Id);
     await TenantInitializers.MigrateAsync(host.Services, tenant, CancellationToken.None);
     await TenantInitializers.SeedAsync(host.Services, tenant, CancellationToken.None);
+    await StaffRoleSeeder.SeedRoleAsync(host.Services, tenant, CancellationToken.None); // feature:staff-area
 
     await using (var scope = host.Services.CreateAsyncScope())
     {

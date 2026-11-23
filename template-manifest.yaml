@@ -64,9 +64,11 @@ paths:
   # The sample feature, the product's starting point: its endpoints, its context and migrations, its page
   - { path: src/Api/Features/Items/**, ownership: product }
   - { path: src/Api/Data/**, ownership: product }
+  - { path: web/src/features/admin/**, ownership: shared }
   - { path: web/src/features/**, ownership: product }
   # What the front end shares with every product; the rest of web/src/ is the product's
   - { path: web/src/lib/**, ownership: shared }
+  - { path: web/src/locales/*/admin.json, ownership: shared }
   - { path: web/src/i18n.ts, ownership: shared }
   - { path: web/src/i18n.test.ts, ownership: shared }
   - { path: web/src/i18next.d.ts, ownership: shared }

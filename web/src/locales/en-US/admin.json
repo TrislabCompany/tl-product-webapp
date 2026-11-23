@@ -1,0 +1,16 @@
+{
+  "title": "Staff area",
+  "signIn": "Sign in",
+  "email": "E-mail",
+  "password": "Password",
+  "signInButton": "Sign in",
+  "signOut": "Sign out",
+  "signInFailed": "The e-mail or the password is wrong.",
+  "unavailable": "The staff area is not available right now. Try again later.",
+  "forbidden": "You are signed in, but you are not staff.",
+  "notEnabled": "The staff area is not switched on in this environment.",
+  "traceId": "Support reference: {{id}}",
+  "loading": "Loading…",
+  "items": "Items",
+  "doneItems": "Items done"
+}

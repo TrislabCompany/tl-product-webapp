@@ -21,6 +21,7 @@ export const MARKED_FILES = [
   'src/Migrator/Program.cs',
   'src/Directory.Packages.props',
   'web/src/App.tsx',
+  'web/src/i18n.ts',
 ];
 
 /** Files whose lines that end with `<!-- starter-only -->` describe the starter, and go with it. */

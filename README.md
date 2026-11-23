@@ -30,6 +30,7 @@ What works on the first deploy, with no change:
 
 - The sample feature, a list of items with forms, ready to replace with your own features.
 - **The framework in single-tenant mode:** one fixed tenant set in configuration, no tenant catalog, sign-up, plans or quotas. Sign-in, users, roles and sessions (Identity), the audit trail (Auditing), files, in-app notifications and webhooks are registered; `init-product` removes the ones a product does not need ([docs/modules.md](docs/modules.md)).
+- **An optional staff area under `/admin`,** for an app with a public part: staff sign in through the framework's Identity, and every `/api/admin` endpoint answers only to a user with the staff permission; a test fails if one answers without a sign-in ([docs/staff-area.md](docs/staff-area.md)). `init-product` removes it unless the product keeps it.
 - **Every endpoint protected by default:** the framework requires a signed-in user unless the endpoint says `.AllowAnonymous()`. The sample's items and the health info are public on purpose.
 - **A front end on `@trislabcompany/framework-ui`,** with every text in English and Slovenian, a language switch, and a test that fails when one language lacks a key.
 - **Mail** through Azure Communication Services, with the framework's SMTP sender; off until the stamp passes its credentials.
@@ -97,6 +98,7 @@ Every base image is pinned by digest. Renovate will keep the versions current; u
 - [Getting started](docs/getting-started.md): the token, running the app with Docker Compose or piece by piece, the services, and the tests.
 - [Architecture](docs/architecture.md): the images, the apps, the migrator, where data lives, the request path, the front end and the framework.
 - [Modules](docs/modules.md): the framework modules registered here, `init-product`, adding a module, and the test data.
+- [Staff area](docs/staff-area.md): the optional `/admin` area, its permission and role, how to switch it on, and how to add a staff page.
 - [Configuration](docs/configuration.md): the settings, `PlatformConfiguration.cs`, the tenancy options, `/config.json`, the `/api` upstream, mail, and how to add a setting or a secret.
 - [Deployment](docs/deployment.md): Environments, deploy, release and promote, migrations, `platform.yaml` and the caps, access to the framework's packages, and how to ask for more. Section 7: the steps for developers.
 - [Template releases](docs/template-releases.md) and [updates from the template](docs/upgrading/README.md): how this starter is released and how a product takes a release.

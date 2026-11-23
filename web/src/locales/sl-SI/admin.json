@@ -1,0 +1,16 @@
+{
+  "title": "Območje za osebje",
+  "signIn": "Prijava",
+  "email": "E-pošta",
+  "password": "Geslo",
+  "signInButton": "Prijava",
+  "signOut": "Odjava",
+  "signInFailed": "E-pošta ali geslo ni pravilno.",
+  "unavailable": "Območje za osebje trenutno ni na voljo. Poskusite pozneje.",
+  "forbidden": "Prijavljeni ste, vendar niste del osebja.",
+  "notEnabled": "Območje za osebje v tem okolju ni vklopljeno.",
+  "traceId": "Referenca za podporo: {{id}}",
+  "loading": "Nalaganje …",
+  "items": "Postavke",
+  "doneItems": "Opravljene postavke"
+}
