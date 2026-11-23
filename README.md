@@ -85,3 +85,7 @@ Every base image is pinned by digest. Renovate will keep the versions current; u
 - [Architecture](docs/architecture.md): the images, the apps, the migrator, where data lives and the request path.
 - [Configuration](docs/configuration.md): the settings, `PlatformConfiguration.cs`, `/config.json`, the `/api` upstream, and how to add a setting or a secret.
 - [Deployment](docs/deployment.md): Environments, deploy, release and promote, migrations, `platform.yaml` and the caps, and how to ask for more. Section 7: the steps for developers.
+
+## Licence
+
+Proprietary: [LICENSE](LICENSE). The code is public to read, but it belongs to Trislab d.o.o., and only Trislab, and the clients of the applications Trislab delivers under a written agreement, may use it. Cloning or forking it for use, copying, redistribution and training AI models on it are not allowed. Material of others, such as the dependencies and a client's texts, logos and photos, keeps its owner's rights and its own licence.
