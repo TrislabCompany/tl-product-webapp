@@ -20,7 +20,7 @@ Use it for an app where people work with data, such as forms, lists or a workflo
 
 ## How to use it
 
-You don't create a repository from this starter yourself. The platform creates it when your product is onboarded: the onboarding PR in `tl-cloud-infrastructure` adds the repository to `catalog/products.yaml`, named `<customer>-webapp-<product>` (for example `trislab-webapp-timesheets`), and the pipeline creates it from this starter with its team, rules and `dev` Environment. Don't use GitHub's "Use this template" button.
+You don't create a repository from this starter yourself. The platform creates it when your product is onboarded: the onboarding PR in `tl-cloud-infrastructure` adds the repository to `catalog/products.yaml`, named `<customer>-webapp-<product>` (for example `trislab-webapp-timesheets`), and the pipeline creates it from this starter with its team and rules. Its `dev` Environment (the stamp) comes later, in a separate onboarding PR, once the product passes locally and Trislab says go; until then `ci / ci` passes without it and `deploy.yml` builds nothing. Don't use GitHub's "Use this template" button.
 
 In its first pull request, the new repository runs `init-product`, which keeps only the framework modules the product needs and deletes what is only for the starter ([docs/modules.md](docs/modules.md)). From then on the code, this README and `docs/` are your team's. Scaffolding improvements reach the repository as `update-from-template` pull requests, one starter release at a time ([docs/upgrading/README.md](docs/upgrading/README.md)); the framework reaches it through the version in `src/Directory.Packages.props`, raised by Renovate.
 

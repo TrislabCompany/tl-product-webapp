@@ -25,7 +25,7 @@ jobs:
     permissions:
       contents: read
       packages: read
-    uses: TrislabCompany/tl-platform/.github/workflows/app-ci.yml@app-workflows/v0.2.0
+    uses: TrislabCompany/tl-platform/.github/workflows/app-ci.yml@app-workflows/v0.4.0-rc.1
     with:
       test-command: >-
         echo "//npm.pkg.github.com/:_authToken=$PACKAGES_TOKEN" >> ~/.npmrc
