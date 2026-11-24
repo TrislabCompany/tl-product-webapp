@@ -12,7 +12,7 @@ Each Environment of the repository is one stamp: a Container Apps environment wi
 | `release` | `test`, `staging`, `uat`, `perf`, `demo`, and their `<customer>-` forms | Every release tag `vX.Y.Z` |
 | `prod` | `prod`, `<customer>-prod` | Only a promotion, after the Environment's reviewers approve |
 
-A new repository starts with `dev`. Your team asks for another Environment through the platform team's onboarding form.
+A new repository starts with no Environment: the product is built and accepted locally first. Its `dev` Environment comes with a separate onboarding PR once Trislab says go, and your team asks for another Environment through the platform team's onboarding form. Until the first one exists, `ci.yml` skips the check of the sizing caps with a notice, and `deploy.yml` and `release.yml` build and push nothing.
 
 ## 2. From PR to production
 
