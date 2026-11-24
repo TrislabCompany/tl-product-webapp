@@ -8,7 +8,7 @@ How many products run on one machine at the same time with `docker compose`, wit
 | --- | --- | --- |
 | The compose project name, so its own containers and volumes | `name:` in `docker-compose.yml` | `tl-product-webapp` |
 | The database `trislab_<slug>` | `POSTGRES_DB` and `DATABASE_URL` in `.env`, and `DATABASE_URL` in `src/Api/Properties/launchSettings.json` | `trislab_webapp` |
-| A port block: the ports on your machine | `WEB_PORT`, `POSTGRES_PORT` and `DASHBOARD_PORT` in `.env` | Block 0 |
+| A port block: the ports on your machine | `WEB_PORT`, `POSTGRES_PORT` and `ASPIRE_PORT` in `.env` | Block 0 |
 
 `init-product` writes all three from the product's id and port block (`--slug`, `--port-block`), in `.env.example`, `docker-compose.yml` and the launch profile. Copy `.env.example` to `.env` again after it changes.
 
@@ -20,7 +20,7 @@ Block `n` owns these ports on `127.0.0.1`:
 | --- | --- | --- | --- |
 | The web ports: `WEB_PORT` and the nine after it, for an app with more than one front end | `8080 + 10n` to `8089 + 10n` | `8080` | `8090` to `8099` |
 | This product's own Postgres (`POSTGRES_PORT`) | `5433 + n` | `5433` | `5434` |
-| The Aspire dashboard (`DASHBOARD_PORT`) | `18888 + n` | `18888` | `18889` |
+| The Aspire dashboard (`ASPIRE_PORT`) | `18888 + n` | `18888` | `18889` |
 
 Port `5432` is left for a shared Postgres. Blocks 0 and 1 are the starters'; a product takes the next free block, from 2, and its hand-off plan names it. `dotnet run` and `pnpm dev` ([getting-started.md](getting-started.md#3-run-the-api-and-the-front-end-separately)) use fixed ports, so run one product that way at a time.
 
@@ -44,4 +44,4 @@ COMPOSE_PROFILES=own-db,dashboard
 OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
 ```
 
-Then open `http://localhost:<DASHBOARD_PORT>`. `api` and `migrator` send their logs, traces and metrics by OTLP; the framework turns the export on when `OTEL_EXPORTER_OTLP_ENDPOINT` is set. The dashboard is bound to `127.0.0.1` and has no sign-in, so it is for your machine only. With `OTEL_EXPORTER_OTLP_ENDPOINT` empty nothing is exported, and the logs are in `docker compose logs`.
+Then open `http://localhost:<ASPIRE_PORT>`. `api` and `migrator` send their logs, traces and metrics by OTLP; the framework turns the export on when `OTEL_EXPORTER_OTLP_ENDPOINT` is set. The dashboard is bound to `127.0.0.1` and has no sign-in, so it is for your machine only. With `OTEL_EXPORTER_OTLP_ENDPOINT` empty nothing is exported, and the logs are in `docker compose logs`.

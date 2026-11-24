@@ -74,15 +74,15 @@ test('parses the slug and the port block, and rejects the blocks of the starters
 });
 
 test('gives each block its own ports', () => {
-  assert.deepEqual(portBlock(0), { WEB_PORT: 8080, POSTGRES_PORT: 5433, DASHBOARD_PORT: 18888 });
-  assert.deepEqual(portBlock(3), { WEB_PORT: 8110, POSTGRES_PORT: 5436, DASHBOARD_PORT: 18891 });
+  assert.deepEqual(portBlock(0), { WEB_PORT: 8080, POSTGRES_PORT: 5433, ASPIRE_PORT: 18888 });
+  assert.deepEqual(portBlock(3), { WEB_PORT: 8110, POSTGRES_PORT: 5436, ASPIRE_PORT: 18891 });
 });
 
 test('writes the ports and the database of the product into .env.example', () => {
   const env = [
     'WEB_PORT=8080',
     'POSTGRES_PORT=5433',
-    'DASHBOARD_PORT=18888',
+    'ASPIRE_PORT=18888',
     '# postgresql://app:app@host.docker.internal:5432/trislab_webapp: the migrator',
     'POSTGRES_DB=trislab_webapp',
     'DATABASE_URL=postgresql://app:app@postgres:5432/trislab_webapp',
@@ -93,7 +93,7 @@ test('writes the ports and the database of the product into .env.example', () =>
     [
       'WEB_PORT=8110',
       'POSTGRES_PORT=5436',
-      'DASHBOARD_PORT=18891',
+      'ASPIRE_PORT=18891',
       '# postgresql://app:app@host.docker.internal:5432/trislab_time_sheets: the migrator',
       'POSTGRES_DB=trislab_time_sheets',
       'DATABASE_URL=postgresql://app:app@postgres:5432/trislab_time_sheets',

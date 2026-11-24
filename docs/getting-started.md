@@ -43,7 +43,7 @@ The services are named like the apps in `platform.yaml` and the stamp's database
 | `migrator` | Applies the migrations, the first administrator and the test data, then exits. `api` starts only once it has finished | None |
 | `api` | The .NET API, at `http://api:8080` inside Compose | None: reach it through `web` |
 | `web` | nginx with the front end, proxying `/api` to `api` | `8080` (`WEB_PORT`) |
-| `aspire-dashboard` | Logs, traces and metrics, with the profile `dashboard` | `18888` (`DASHBOARD_PORT`) |
+| `aspire-dashboard` | Logs, traces and metrics, with the profile `dashboard` | `18888` (`ASPIRE_PORT`) |
 
 To run several products side by side, or on a Postgres that already runs, each product has its own ports, database and compose project: [local-ports.md](local-ports.md).
 

@@ -110,7 +110,7 @@ export function parseArgs(argv) {
 
 /** The ports of block n (docs/local-ports.md). Block 0 is the webapp starter's, block 1 the SaaS starter's. */
 export function portBlock(n) {
-  return { WEB_PORT: 8080 + 10 * n, POSTGRES_PORT: 5433 + n, DASHBOARD_PORT: 18888 + n };
+  return { WEB_PORT: 8080 + 10 * n, POSTGRES_PORT: 5433 + n, ASPIRE_PORT: 18888 + n };
 }
 
 /** The database of a product: trislab_ and its slug, with _ for -. */

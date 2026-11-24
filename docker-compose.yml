@@ -75,7 +75,7 @@ services:
     depends_on:
       - api
 
-  # Logs, traces and metrics of api and migrator, on http://localhost:${DASHBOARD_PORT}
+  # Logs, traces and metrics of api and migrator, on http://localhost:${ASPIRE_PORT}
   # with the profile dashboard; they send them by OTLP when
   # OTEL_EXPORTER_OTLP_ENDPOINT is http://aspire-dashboard:18889 (.env.example).
   aspire-dashboard:
@@ -85,7 +85,7 @@ services:
       # Local only, bound to 127.0.0.1: no sign-in to the dashboard.
       ASPIRE_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS: "true"
     ports:
-      - "127.0.0.1:${DASHBOARD_PORT:-18888}:18888"
+      - "127.0.0.1:${ASPIRE_PORT:-18888}:18888"
 
 secrets:
   packages:

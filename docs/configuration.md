@@ -24,7 +24,7 @@ The platform sets environment variables on each app. Locally, `.env` sets the sa
 | `PUBLIC_*` | `web` | `apps[].env` of `web` in `stamp.yaml` | `PUBLIC_DEFAULT_LANGUAGE`, `PUBLIC_STAFF_AREA` |
 | `API_UPSTREAM` | `web` | Never in a stamp | `http://api:8080`, in `docker-compose.yml` |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | `api`, `migrator` | Not set: the stamp collects the logs from the console | Empty, or the Aspire dashboard ([local-ports.md](local-ports.md#4-logs-traces-and-metrics-the-aspire-dashboard)) |
-| `COMPOSE_PROFILES`, `WEB_PORT`, `POSTGRES_PORT`, `DASHBOARD_PORT` | `docker compose` only | Never | The profile `own-db` and port block 0 ([local-ports.md](local-ports.md)) |
+| `COMPOSE_PROFILES`, `WEB_PORT`, `POSTGRES_PORT`, `ASPIRE_PORT` | `docker compose` only | Never | The profile `own-db` and port block 0 ([local-ports.md](local-ports.md)) |
 
 Secrets arrive as ordinary environment variables too: the platform reads them from the Key Vault. The app never signs in to the Key Vault, and no secret is ever in the repository, the image or `appsettings.json`.
 
