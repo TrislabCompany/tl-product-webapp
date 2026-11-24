@@ -21,8 +21,8 @@ Each module keeps its tables in a schema of its own and ships its own migrations
 A new product is a copy of this starter that registers every module above. In its first pull request, `init-product` keeps only the modules the product needs ([the skill](../.agents/skills/init-product/SKILL.md)):
 
 ```sh
-node scripts/init-product.mjs --modules files,notifications --name "Timesheets"
-node scripts/init-product.mjs --modules none --dry-run     # only Identity; show what would change
+node scripts/init-product.mjs --modules files,notifications --slug timesheets --port-block 2 --name "Timesheets"
+node scripts/init-product.mjs --modules none --slug timesheets --port-block 2 --dry-run   # only Identity; show what would change
 ```
 
 It removes, never adds. A line of a source file that ends with `module:<name>` belongs to that module (a `using`, a `typeof(...)` in the mediator's assemblies, the assembly in `moduleAssemblies`, a package reference or a package version); `scripts/init/choices.json` lists the module's own files. The same run deletes the files that `template-manifest.yaml` marks `template-only`, including the script itself. Then fix the README and run `dotnet build src/App.slnx`, `dotnet test src/App.slnx` and `pnpm --dir web test`.

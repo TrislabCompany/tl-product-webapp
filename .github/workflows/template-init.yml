@@ -65,7 +65,12 @@ jobs:
           cp -r web/node_modules /tmp/init-product/web/node_modules
           cd /tmp/init-product
           git init -q && git add -A
-          node scripts/init-product.mjs --modules '${{ matrix.modules }}' --name "Init test"
+          node scripts/init-product.mjs --modules '${{ matrix.modules }}' --name "Init test" --slug init-test --port-block 2
+          # Port block 2 and the database trislab_init_test (docs/local-ports.md).
+          grep -qx 'WEB_PORT=8100' .env.example
+          grep -qx 'POSTGRES_PORT=5435' .env.example
+          grep -qx 'POSTGRES_DB=trislab_init_test' .env.example
+          grep -qx 'name: init-test' docker-compose.yml
 
       - name: Build and test the product
         working-directory: /tmp/init-product

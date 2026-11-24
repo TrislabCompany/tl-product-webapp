@@ -3,7 +3,11 @@
 // in the repository's first pull request (docs/modules.md, docs/template-releases.md). It removes, never adds:
 // a module a product needs later is added by hand with the `add-module` steps of tl-framework.
 //
-//   node scripts/init-product.mjs --modules identity,files --features staff-area [--name "Product name"] [--dry-run]
+//   node scripts/init-product.mjs --modules identity,files --features staff-area --slug timesheets --port-block 3
+//     [--name "Product name"] [--dry-run]
+//
+// --slug and --port-block write the product's local settings, so that many products run side by side
+// (docs/local-ports.md): the compose project name, the database trislab_<slug> and the ports of block n.
 //
 // What "keep" means is in scripts/init/choices.json: each module and feature has the lines that belong to it,
 // marked in the files with `module:<name>` or `feature:<name>` at the end of the line, and the files that
@@ -81,7 +85,7 @@ export function plan(registry, { modules, features }) {
 }
 
 export function parseArgs(argv) {
-  const out = { modules: [], features: [], name: undefined, dryRun: false, modulesGiven: false };
+  const out = { modules: [], features: [], name: undefined, slug: undefined, portBlock: undefined, dryRun: false, modulesGiven: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     const list = (v) => (v === 'none' || v === '' ? [] : v.split(',').map((s) => s.trim()).filter(Boolean));
@@ -91,9 +95,49 @@ export function parseArgs(argv) {
       out.modulesGiven = true;
     } else if (a === '--features') out.features = list(argv[++i] ?? '');
     else if (a === '--name') out.name = argv[++i];
-    else throw new Error(`unknown option ${a}`);
+    else if (a === '--slug') {
+      out.slug = argv[++i];
+      if (!/^[a-z][a-z0-9-]{1,40}$/.test(out.slug ?? '')) throw new Error('--slug is the product id in kebab-case, such as timesheets');
+    } else if (a === '--port-block') {
+      out.portBlock = Number(argv[++i]);
+      if (!Number.isInteger(out.portBlock) || out.portBlock < 2 || out.portBlock > 99) {
+        throw new Error('--port-block is a whole number from 2 to 99 (0 and 1 are the starters)');
+      }
+    } else throw new Error(`unknown option ${a}`);
   }
   return out;
+}
+
+/** The ports of block n (docs/local-ports.md). Block 0 is the webapp starter's, block 1 the SaaS starter's. */
+export function portBlock(n) {
+  return { WEB_PORT: 8080 + 10 * n, POSTGRES_PORT: 5433 + n, ASPIRE_PORT: 18888 + n };
+}
+
+/** The database of a product: trislab_ and its slug, with _ for -. */
+export function databaseName(slug) {
+  return `trislab_${slug.replaceAll('-', '_')}`;
+}
+
+/** .env.example with the product's ports and database. Only the lines that set a name change. */
+export function localEnv(text, { slug, block }) {
+  const db = databaseName(slug);
+  const values = { ...portBlock(block), POSTGRES_DB: db };
+  let out = text;
+  for (const [name, value] of Object.entries(values)) {
+    out = out.replace(new RegExp(`^${name}=.*$`, 'm'), `${name}=${value}`);
+  }
+  // The database at the end of every Postgres URL, in DATABASE_URL and in the comments.
+  return out.replace(/(postgresql:\/\/[^\s/]+\/)trislab_[a-z0-9_]+/g, `$1${db}`);
+}
+
+/** The API's launch profile with the product's own Postgres port and database, for `dotnet run`. */
+export function localLaunch(text, { slug, block }) {
+  return text.replace(/(postgresql:\/\/[^\s/"]+@localhost:)\d+\/trislab_[a-z0-9_]+/g, `$1${portBlock(block).POSTGRES_PORT}/${databaseName(slug)}`);
+}
+
+/** docker-compose.yml with the product's project name, so its volumes are its own. */
+export function localCompose(text, { slug }) {
+  return text.replace(/^name: .*$/m, `name: ${slug}`);
 }
 
 function templateOnlyPaths() {
@@ -134,6 +178,10 @@ function main() {
         `  modules:  ${Object.entries(registry.modules).map(([n, m]) => n + (m.required ? ' (always kept)' : '')).join(', ')}\n` +
         `  features: ${Object.keys(registry.features).join(', ') || '(none)'}`,
     );
+    process.exit(1);
+  }
+  if (args.slug === undefined || args.portBlock === undefined) {
+    console.error('init-product: give the product id with --slug and its local port block with --port-block (docs/local-ports.md).');
     process.exit(1);
   }
   const p = plan(registry, args);
@@ -190,6 +238,20 @@ function main() {
         edited.push(file);
         if (!args.dryRun) writeFileSync(file, after);
       }
+    }
+  }
+
+  // 5. The local ports, database and compose project of the product.
+  for (const [file, change] of [
+    ['.env.example', localEnv],
+    ['docker-compose.yml', localCompose],
+    ['src/Api/Properties/launchSettings.json', localLaunch],
+  ]) {
+    const before = readFileSync(file, 'utf8');
+    const after = change(before, { slug: args.slug, block: args.portBlock });
+    if (after !== before) {
+      edited.push(file);
+      if (!args.dryRun) writeFileSync(file, after);
     }
   }
 

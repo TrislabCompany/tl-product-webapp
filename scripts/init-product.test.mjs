@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { parseArgs, plan, removeMarkedLines, removeStarterLines } from './init-product.mjs';
+import { localCompose, localEnv, localLaunch, parseArgs, plan, portBlock, removeMarkedLines, removeStarterLines } from './init-product.mjs';
 
 const registry = {
   modules: { identity: { required: true }, files: {}, notifications: {}, webhooks: { needs: ['identity'] } },
@@ -49,6 +49,8 @@ test('parses the options', () => {
     modules: ['files', 'webhooks'],
     features: [],
     name: 'Timesheets',
+    slug: undefined,
+    portBlock: undefined,
     dryRun: true,
     modulesGiven: true,
   });
@@ -59,5 +61,54 @@ test('removes the lines that describe the starter', () => {
   assert.equal(
     removeStarterLines('a\n| b | c | <!-- starter-only -->\nd <!-- starter-only -->\r\ne\n'),
     'a\ne\n',
+  );
+});
+
+test('parses the slug and the port block, and rejects the blocks of the starters', () => {
+  const a = parseArgs(['--slug', 'time-sheets', '--port-block', '3']);
+  assert.equal(a.slug, 'time-sheets');
+  assert.equal(a.portBlock, 3);
+  assert.throws(() => parseArgs(['--port-block', '1']));
+  assert.throws(() => parseArgs(['--port-block', 'x']));
+  assert.throws(() => parseArgs(['--slug', 'Time Sheets']));
+});
+
+test('gives each block its own ports', () => {
+  assert.deepEqual(portBlock(0), { WEB_PORT: 8080, POSTGRES_PORT: 5433, ASPIRE_PORT: 18888 });
+  assert.deepEqual(portBlock(3), { WEB_PORT: 8110, POSTGRES_PORT: 5436, ASPIRE_PORT: 18891 });
+});
+
+test('writes the ports and the database of the product into .env.example', () => {
+  const env = [
+    'WEB_PORT=8080',
+    'POSTGRES_PORT=5433',
+    'ASPIRE_PORT=18888',
+    '# postgresql://app:app@host.docker.internal:5432/trislab_webapp: the migrator',
+    'POSTGRES_DB=trislab_webapp',
+    'DATABASE_URL=postgresql://app:app@postgres:5432/trislab_webapp',
+    '',
+  ].join('\n');
+  assert.equal(
+    localEnv(env, { slug: 'time-sheets', block: 3 }),
+    [
+      'WEB_PORT=8110',
+      'POSTGRES_PORT=5436',
+      'ASPIRE_PORT=18891',
+      '# postgresql://app:app@host.docker.internal:5432/trislab_time_sheets: the migrator',
+      'POSTGRES_DB=trislab_time_sheets',
+      'DATABASE_URL=postgresql://app:app@postgres:5432/trislab_time_sheets',
+      '',
+    ].join('\n'),
+  );
+});
+
+test('names the compose project after the product', () => {
+  assert.equal(localCompose('# x\nname: tl-product-webapp\nservices:\n', { slug: 'time-sheets' }), '# x\nname: time-sheets\nservices:\n');
+});
+
+test('points the launch profile at the Postgres of the product', () => {
+  assert.equal(
+    localLaunch('"DATABASE_URL": "postgresql://app:app@localhost:5433/trislab_webapp"', { slug: 'time-sheets', block: 3 }),
+    '"DATABASE_URL": "postgresql://app:app@localhost:5436/trislab_time_sheets"',
   );
 });

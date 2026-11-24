@@ -31,7 +31,7 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Open <http://localhost:8080>. You see the sample: a list of items you can add, rename, tick and delete. Switch the language in the header between English and Slovenian.
+Open <http://localhost:8080> (`WEB_PORT`). You see the sample: a list of items you can add, rename, tick and delete. Switch the language in the header between English and Slovenian.
 
 `.env.example` turns on the test data, so the app also has two users: the first administrator, `admin@example.com` with the password `SEED_ADMIN_PASSWORD` of your `.env`, and a demo user, `user@example.com` with the public password `Password123!`. Sign in through the API: `POST /api/v1/identity/token/issue` with `{"email": "…", "password": "…"}`.
 
@@ -39,10 +39,13 @@ The services are named like the apps in `platform.yaml` and the stamp's database
 
 | Service | What it is | Port on your machine |
 | --- | --- | --- |
-| `postgres` | Postgres 17, the same image as a dev stamp | `5432` |
+| `postgres` | Postgres 17, the same image as a dev stamp, with the profile `own-db` | `5433` (`POSTGRES_PORT`) |
 | `migrator` | Applies the migrations, the first administrator and the test data, then exits. `api` starts only once it has finished | None |
 | `api` | The .NET API, at `http://api:8080` inside Compose | None: reach it through `web` |
-| `web` | nginx with the front end, proxying `/api` to `api` | `8080` |
+| `web` | nginx with the front end, proxying `/api` to `api` | `8080` (`WEB_PORT`) |
+| `aspire-dashboard` | Logs, traces and metrics, with the profile `dashboard` | `18888` (`ASPIRE_PORT`) |
+
+To run several products side by side, or on a Postgres that already runs, each product has its own ports, database and compose project: [local-ports.md](local-ports.md).
 
 The API answers `GET /api/health/info` without sign-in. Call it through `web`, to see that the `/api` proxy reaches the API:
 
@@ -53,7 +56,7 @@ curl http://localhost:8080/api/health/info
 
 The API's OpenAPI document is at <http://localhost:8080/api/openapi/v1.json>.
 
-Stop the app with `docker compose down`. Add `-v` to delete the database too; the migrator creates it again on the next start.
+Stop the app with `docker compose down`. Add `-v` to delete the database too; the migrator creates it again on the next start. With a shared Postgres, `-v` deletes nothing there: drop the database `trislab_webapp` yourself.
 
 ## 3. Run the API and the front end separately
 
