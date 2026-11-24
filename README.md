@@ -86,7 +86,7 @@ Every base image is pinned by digest. Renovate will keep the versions current; u
 
 ## First steps
 
-1. **Get a token for the framework's packages** ([getting-started.md](docs/getting-started.md#1-what-you-need)), then **run it locally:** `cp .env.example .env`, then `docker compose up --build`, and open <http://localhost:8080>. Before you push, run `dotnet test src/App.slnx` and `pnpm --dir web test`. [getting-started.md](docs/getting-started.md) also runs the API and the front end separately.
+1. **Get a token for the framework's packages** ([getting-started.md](docs/getting-started.md#1-what-you-need)), then **run it locally:** `cp .env.example .env`, then `docker compose up --build`, and open <http://localhost:8080>. Several products side by side, or on a Postgres that already runs: [local-ports.md](docs/local-ports.md). Before you push, run `dotnet test src/App.slnx` and `pnpm --dir web test`. [getting-started.md](docs/getting-started.md) also runs the API and the front end separately.
 2. **Open your first PR:** run `init-product` to choose the modules, then change something in `web/src/` or `src/Api/`, push a branch and open a PR. `ci / ci` must pass and a code owner must approve.
 3. **Deploy, release and promote:** a merge to `main` deploys to `dev`, a tag `vX.Y.Z` releases to the `release` tier, and a promotion moves a release to production. `deploy.yml` and `release.yml` do the first two, and the platform adds `promote.yml` before the first production Environment; [deployment.md](docs/deployment.md) explains how they work, and [its section 7](docs/deployment.md#7-steps-for-developers) lists your steps. The `release` skill runs them.
 4. **Add a migration:** change the model in `src/Api/Data/`, then `dotnet ef migrations add <Name>`. Keep it backward compatible ([deployment.md](docs/deployment.md#3-migrations)). A module's migrations come in its package.
@@ -96,6 +96,7 @@ Every base image is pinned by digest. Renovate will keep the versions current; u
 ## More
 
 - [Getting started](docs/getting-started.md): the token, running the app with Docker Compose or piece by piece, the services, and the tests.
+- [Local ports](docs/local-ports.md): the port blocks, the database and compose project of each product, a shared Postgres, and the Aspire dashboard.
 - [Architecture](docs/architecture.md): the images, the apps, the migrator, where data lives, the request path, the front end and the framework.
 - [Modules](docs/modules.md): the framework modules registered here, `init-product`, adding a module, and the test data.
 - [Staff area](docs/staff-area.md): the optional `/admin` area, its permission and role, how to switch it on, and how to add a staff page.

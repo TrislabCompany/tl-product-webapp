@@ -28,10 +28,11 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         await _postgres.StartAsync();
 
         // The API and the migrator read the platform's settings from the environment, in the form the stamp sets.
+        // The database does not exist yet, as on a shared Postgres (docs/local-ports.md): the migrator creates it.
         var b = new Npgsql.NpgsqlConnectionStringBuilder(_postgres.GetConnectionString());
         var settings = new Dictionary<string, string>
         {
-            ["DATABASE_URL"] = $"postgresql://{b.Username}:{b.Password}@{b.Host}:{b.Port}/{b.Database}",
+            ["DATABASE_URL"] = $"postgresql://{b.Username}:{b.Password}@{b.Host}:{b.Port}/trislab_webapp_test",
             ["PLATFORM_ENVIRONMENT"] = "test",
             ["JWT_SIGNING_KEY"] = "integration-test-signing-key-integration-test-signing-key",
             ["SEED_ADMIN_PASSWORD"] = AdminPassword,

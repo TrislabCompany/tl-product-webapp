@@ -5,18 +5,26 @@
 # come from .env, a copy of .env.example (docs/getting-started.md). The images
 # build with the packages of tl-framework, which need PACKAGES_TOKEN in your
 # shell: a personal token with read:packages.
+#
+# Many products run side by side (docs/local-ports.md): each has its own project
+# name, so its own volumes, and its own ports and database from .env. The profile
+# own-db (the default, in COMPOSE_PROFILES) starts this app's Postgres; without
+# it, DATABASE_URL points to a Postgres that is already running, and the
+# migrator creates the database. The profile dashboard adds the Aspire dashboard
+# for logs, traces and metrics.
 name: tl-product-webapp
 
 services:
   postgres:
     # The same Postgres as a dev stamp.
     image: postgres:17.11-alpine@sha256:266d3c257594e195b309ae9d1805e54c788f1d7b375f56bf6c367aac6c917e7b
+    profiles: [own-db]
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:
@@ -34,8 +42,12 @@ services:
       JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
       SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD}
       SEED_TEST_DATA: ${SEED_TEST_DATA}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+      OTEL_SERVICE_NAME: migrator
+    extra_hosts: ["host.docker.internal:host-gateway"]
     depends_on:
-      postgres: { condition: service_healthy }
+      # Not required: with a shared Postgres, this app's own does not run.
+      postgres: { condition: service_healthy, required: false }
 
   api:
     build: { context: ., dockerfile: src/Api/Dockerfile, secrets: [packages] }
@@ -43,8 +55,11 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       PLATFORM_ENVIRONMENT: ${PLATFORM_ENVIRONMENT}
       JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
-      FrontendOptions__DefaultOrigin: http://localhost:8080
+      FrontendOptions__DefaultOrigin: http://localhost:${WEB_PORT:-8080}
       StaffArea__Enabled: ${StaffArea__Enabled}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+      OTEL_SERVICE_NAME: api
+    extra_hosts: ["host.docker.internal:host-gateway"]
     depends_on:
       migrator: { condition: service_completed_successfully }
 
@@ -56,9 +71,21 @@ services:
       PUBLIC_DEFAULT_LANGUAGE: ${PUBLIC_DEFAULT_LANGUAGE}
       PUBLIC_STAFF_AREA: ${PUBLIC_STAFF_AREA}
     ports:
-      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:${WEB_PORT:-8080}:8080"
     depends_on:
       - api
+
+  # Logs, traces and metrics of api and migrator, on http://localhost:${DASHBOARD_PORT}
+  # with the profile dashboard; they send them by OTLP when
+  # OTEL_EXPORTER_OTLP_ENDPOINT is http://aspire-dashboard:18889 (.env.example).
+  aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:13.6.4@sha256:23411f715be2476da0b2c0ad110039237de657c6cae31bf5c587d12a26c11230
+    profiles: [dashboard]
+    environment:
+      # Local only, bound to 127.0.0.1: no sign-in to the dashboard.
+      ASPIRE_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS: "true"
+    ports:
+      - "127.0.0.1:${DASHBOARD_PORT:-18888}:18888"
 
 secrets:
   packages:

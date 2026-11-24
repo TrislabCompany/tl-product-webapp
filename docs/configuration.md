@@ -10,7 +10,7 @@ The platform sets environment variables on each app. Locally, `.env` sets the sa
 | --- | --- | --- | --- |
 | `PLATFORM_ENVIRONMENT` | `web`, `api`, `migrator` | The stamp: the Environment's name, such as `dev` | `local` |
 | `PLATFORM_STAMP` | `web`, `api`, `migrator` | The stamp: its name, such as `shr-con-dev` | Not set |
-| `DATABASE_URL` | `api`, `migrator` | The stamp's Postgres, as a URL such as `postgresql://user:password@host:5432/db?sslmode=require`, from the Key Vault | `postgresql://app:app@postgres:5432/app` |
+| `DATABASE_URL` | `api`, `migrator` | The stamp's Postgres, as a URL such as `postgresql://user:password@host:5432/db?sslmode=require`, from the Key Vault | `postgresql://app:app@postgres:5432/trislab_webapp`, or a shared Postgres ([local-ports.md](local-ports.md)) |
 | `JWT_SIGNING_KEY` | `api`, `migrator` | The secret `jwt-signing-key`: signs the sign-in tokens | A local key in `.env` |
 | `SEED_ADMIN_PASSWORD` | `migrator` | The secret `seed-admin-password`: the first administrator's password | A local password in `.env` |
 | `HANGFIRE_PASSWORD` | `api` | The secret `hangfire-password`; without it there is no jobs dashboard at `/jobs` and the jobs still run | Not set |
@@ -23,6 +23,8 @@ The platform sets environment variables on each app. Locally, `.env` sets the sa
 | `TenancyOptions__SingleTenant__*` | `api`, `migrator` | `apps[].env`, the same values for both ([section 2a](#2a-tenancy-mode)) | `src/Api/appsettings.json` |
 | `PUBLIC_*` | `web` | `apps[].env` of `web` in `stamp.yaml` | `PUBLIC_DEFAULT_LANGUAGE`, `PUBLIC_STAFF_AREA` |
 | `API_UPSTREAM` | `web` | Never in a stamp | `http://api:8080`, in `docker-compose.yml` |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | `api`, `migrator` | Not set: the stamp collects the logs from the console | Empty, or the Aspire dashboard ([local-ports.md](local-ports.md#4-logs-traces-and-metrics-the-aspire-dashboard)) |
+| `COMPOSE_PROFILES`, `WEB_PORT`, `POSTGRES_PORT`, `DASHBOARD_PORT` | `docker compose` only | Never | The profile `own-db` and port block 0 ([local-ports.md](local-ports.md)) |
 
 Secrets arrive as ordinary environment variables too: the platform reads them from the Key Vault. The app never signs in to the Key Vault, and no secret is ever in the repository, the image or `appsettings.json`.
 

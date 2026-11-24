@@ -168,7 +168,8 @@ finally
     await host.StopAsync();
 }
 
-// Postgres may still be starting; wait with a growing pause, for two minutes at most.
+// Postgres may still be starting; wait with a growing pause, for two minutes at most. A server that answers but has
+// no database of that name yet is a shared Postgres (docs/local-ports.md): the migrator creates the database.
 static async Task WaitForDatabaseAsync(string connectionString, ILogger log)
 {
     var delay = TimeSpan.FromSeconds(1);
@@ -179,6 +180,11 @@ static async Task WaitForDatabaseAsync(string connectionString, ILogger log)
         {
             await using var connection = new NpgsqlConnection(connectionString);
             await connection.OpenAsync();
+            return;
+        }
+        catch (PostgresException e) when (e.SqlState == PostgresErrorCodes.InvalidCatalogName)
+        {
+            await CreateDatabaseAsync(connectionString, log);
             return;
         }
         catch (Exception e) when (e is NpgsqlException or System.Net.Sockets.SocketException)
@@ -192,5 +198,32 @@ static async Task WaitForDatabaseAsync(string connectionString, ILogger log)
             await Task.Delay(delay);
             delay = TimeSpan.FromSeconds(Math.Min(delay.TotalSeconds * 1.5, 10));
         }
+    }
+}
+
+// Creates the database of the connection string, through the server's maintenance database "postgres". Only when the
+// database is missing, so a stamp, whose database the platform creates, never gets here. Two migrators that start
+// at once may both try; the second one finds the database there.
+static async Task CreateDatabaseAsync(string connectionString, ILogger log)
+{
+    var name = new NpgsqlConnectionStringBuilder(connectionString).Database
+        ?? throw new InvalidOperationException("DATABASE_URL names no database.");
+    var maintenance = new NpgsqlConnectionStringBuilder(connectionString) { Database = "postgres", Pooling = false };
+    await using var connection = new NpgsqlConnection(maintenance.ConnectionString);
+    await connection.OpenAsync();
+
+    // CREATE DATABASE takes no parameter; the name is quoted as an identifier, so it cannot end the statement.
+    var quoted = "\"" + name.Replace("\"", "\"\"", StringComparison.Ordinal) + "\"";
+#pragma warning disable CA2100 // Justification: the only variable part is the database name, quoted as an identifier.
+    await using var command = new NpgsqlCommand("CREATE DATABASE " + quoted, connection);
+#pragma warning restore CA2100
+    try
+    {
+        await command.ExecuteNonQueryAsync();
+        log.LogInformation("Created the database {Database}", name);
+    }
+    catch (PostgresException e) when (e.SqlState is PostgresErrorCodes.DuplicateDatabase or PostgresErrorCodes.UniqueViolation)
+    {
+        log.LogInformation("The database {Database} was created by another migrator", name);
     }
 }

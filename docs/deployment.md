@@ -49,7 +49,7 @@ To add a migration, change the model in `src/Api/Data/` and run, with the Compos
 
 ```sh
 dotnet tool install --global dotnet-ef
-DATABASE_URL=postgresql://app:app@localhost:5432/app dotnet ef migrations add <Name> --project src/Api --output-dir Data/Migrations
+DATABASE_URL=postgresql://app:app@localhost:5433/trislab_webapp dotnet ef migrations add <Name> --project src/Api --output-dir Data/Migrations
 ```
 
 Commit the files it writes in `src/Api/Data/Migrations/`. `docker compose up --build` applies it locally, through the migrator, as every deploy does. Answer "Is the migration backward compatible?" in the PR.
