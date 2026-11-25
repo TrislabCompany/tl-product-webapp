@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@trislabcompany/framework-ui':
-        specifier: 0.2.0
-        version: 0.2.0(i18next-browser-languagedetector@8.3.0)(i18next@26.7.1(typescript@5.9.3))(react-i18next@17.1.12(i18next@26.7.1(typescript@5.9.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(react@19.3.1)
+        specifier: 0.3.0
+        version: 0.3.0(i18next-browser-languagedetector@8.3.0)(i18next@26.7.1(typescript@5.9.3))(react-i18next@17.1.12(i18next@26.7.1(typescript@5.9.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(react@19.3.1)
       i18next:
         specifier: 26.7.1
         version: 26.7.1(typescript@5.9.3)
@@ -257,6 +257,9 @@ packages:
       '@noble/hashes':
         optional: true
 
+  '@fontsource-variable/inter@5.3.0':
+    resolution: {integrity: sha512-OupL48va4JNofb97w6NYeF9S7W/kHNKM0Er8Dem5nqi4jeOLrVJDoE8tZEpnMJmtkvNbB1EIPPwHcdkF6b1oUA==}
+
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
     engines: {node: '>=18.18.0'}
@@ -426,8 +429,9 @@ packages:
       '@types/react-dom':
         optional: true
 
-  '@trislabcompany/framework-ui@0.2.0':
-    resolution: {integrity: sha512-6HIgJ0B9aAlhlOt/NEm286obA6DQHTMm9tBU94JptgdLsEtvgdr/nARvEzbS6M9tARJg/sEmOvcjNsarFqyEAQ==, tarball: https://npm.pkg.github.com/download/@trislabcompany/framework-ui/0.2.0/f44735126214bc35321dc4828abe4dd47cb23bc7}
+  '@trislabcompany/framework-ui@0.3.0':
+    resolution: {integrity: sha512-T0irh4t7jn+084Ow3s+T4aBtn+UpQgq/O9jrL5lkN6jb501KvxM3ntI5DGAKanRf9AUsS4XENyxt4+L/tNy/tA==, tarball: https://npm.pkg.github.com/download/@trislabcompany/framework-ui/0.3.0/e2fef4823b6c30450b3c3472b2d63c9094e57b86}
+    hasBin: true
     peerDependencies:
       i18next: ^26.7.1
       i18next-browser-languagedetector: ^8.3.0
@@ -1538,6 +1542,8 @@ snapshots:
 
   '@exodus/bytes@1.16.0': {}
 
+  '@fontsource-variable/inter@5.3.0': {}
+
   '@humanfs/core@0.19.2':
     dependencies:
       '@humanfs/types': 0.15.0
@@ -1653,8 +1659,9 @@ snapshots:
       '@types/react': 19.3.0
       '@types/react-dom': 19.3.0(@types/react@19.3.0)
 
-  '@trislabcompany/framework-ui@0.2.0(i18next-browser-languagedetector@8.3.0)(i18next@26.7.1(typescript@5.9.3))(react-i18next@17.1.12(i18next@26.7.1(typescript@5.9.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(react@19.3.1)':
+  '@trislabcompany/framework-ui@0.3.0(i18next-browser-languagedetector@8.3.0)(i18next@26.7.1(typescript@5.9.3))(react-i18next@17.1.12(i18next@26.7.1(typescript@5.9.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(react@19.3.1)':
     dependencies:
+      '@fontsource-variable/inter': 5.3.0
       i18next: 26.7.1(typescript@5.9.3)
       i18next-browser-languagedetector: 8.3.0
       react: 19.3.1
