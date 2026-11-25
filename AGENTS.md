@@ -61,13 +61,24 @@ pnpm --dir web install && pnpm --dir web test        # tsc, ESLint, Vitest and t
 
 Run both test commands before every push: `ci / ci` runs them, builds the three images, scans them with Trivy and checks `platform.yaml`. Running the parts separately: [docs/getting-started.md](docs/getting-started.md).
 
+## Development mode: breaking changes are allowed
+
+The starter and the products built from it are still in development. No product runs in production, and there is no real data to keep. Until Trislab ends this mode here, it overrides every compatibility rule in this repository (the migration rule below, `api-contracts.md`, `docs/deployment.md` section 3, `docs/architecture.md`):
+
+- **Change in place.** Rename or remove an endpoint, a field, a route or a setting when that gives the better design. No endpoint kept next to the old one, no "drop in a later release".
+- **Migrations may break.** A migration may drop, rename or reshape columns and tables, in one step and with no data migration. Add a new migration; never edit one that is already on `main`.
+- **Say what breaks.** The PR body lists every breaking change, with what a product has to change. A template release still marks itself breaking by `docs/template-releases.md`, so `update-from-template` shows the products what to do.
+- **What doesn't change:** tests for every behaviour, the security rules, and the rest of the platform contract below (ports, the non-root user, `/healthz` and `/readyz`, the names in `platform.yaml`).
+
+The mode ends when the first product built from this starter goes to production. Then this section is removed and the compatibility rules apply again.
+
 ## Platform contract (do not break)
 
 - Every image listens on **8080**, runs as a **non-root** user, and pins its base image by digest.
 - `web` and `api` answer `/healthz` and `/readyz`; the API is ready only while Postgres answers.
 - The API reads the platform's settings (`DATABASE_URL`, `PLATFORM_*`, the secrets) **only** in `src/Api/Platform/PlatformConfiguration.cs`; everything else reads configuration keys ([docs/configuration.md](docs/configuration.md)).
 - The front end calls the API at the relative path `/api`, through its nginx. `/config.json` holds only `PLATFORM_*` and `PUBLIC_*` keys.
-- **Migrations are backward compatible:** the previous API revision keeps serving on the migrated database, and a rollback never reverses one. Add first, drop in a later release; never edit a migration that has run ([docs/deployment.md](docs/deployment.md#3-migrations)).
+- **Migrations are backward compatible:** the previous API revision keeps serving on the migrated database, and a rollback never reverses one. Add first, drop in a later release; never edit a migration that has run ([docs/deployment.md](docs/deployment.md#3-migrations)). Not yet: in development mode breaking changes are allowed (`AGENTS.md`, "Development mode").
 - **Logs come from the framework.** The framework's logging writes them; this repository has no formatter or correlation code, and `src/Api/appsettings.Production.json` only configures it ([.claude/rules/logging.md](.claude/rules/logging.md)).
 - `platform.yaml` stays within the stamp's caps.
 

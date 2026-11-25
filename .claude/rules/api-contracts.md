@@ -15,6 +15,9 @@ Checked by: review, and the integration tests for each endpoint. The front end, 
 - Return `TypedResults` and declare every outcome in the lambda's `Results<…>` type, so the OpenAPI document (`/api/openapi/v1.json`) is complete.
 - Errors are always ProblemDetails (RFC 9457) with `traceId`; validation errors are a `ValidationProblem` keyed by the field name in camelCase. Don't invent another error shape.
 - JSON is camelCase. Times are UTC, ISO 8601. A list that can grow past a page takes `page` and `pageSize` (capped) and answers `{ items, page, pageSize, total }`.
+
+> Not yet: in development mode breaking changes are allowed (`AGENTS.md`, "Development mode"). "Change only by adding" and the migration rule under "The database" apply once the first product is in production.
+
 - **Change only by adding.** A new optional field, a new endpoint. Never rename or remove a field, change its type, make an optional field required, or change a route or a status code: the previous revision and a cached front end still use it. When a breaking change can't be avoided, add the new endpoint next to the old one and remove the old one in a later release.
 
 ## The database
