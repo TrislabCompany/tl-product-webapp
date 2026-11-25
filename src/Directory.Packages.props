@@ -7,7 +7,7 @@
   <PropertyGroup>
     <!-- One version for every Trislab.* package: the framework's (tl-framework, docs/packages.md). Raise it only
          to a version that was published; Renovate opens the pull request. -->
-    <TrislabFrameworkVersion>0.2.0</TrislabFrameworkVersion>
+    <TrislabFrameworkVersion>0.3.0</TrislabFrameworkVersion>
   </PropertyGroup>
   <ItemGroup Label="Trislab framework">
     <PackageVersion Include="Trislab.Framework.Web" Version="$(TrislabFrameworkVersion)" />
