@@ -1,6 +1,6 @@
 # This repository
 
-> An interactive web app on the Trislab platform, for one organisation: a React front end on `framework-ui`, served by nginx, a .NET 10 API built on the `tl-framework` packages in single-tenant mode, and a migrator, over Postgres. Start with [README.md](README.md); the detail is in [docs/](docs/).
+> An interactive web app on the Trislab platform, for one organisation: a React front end on `framework-ui`, served by nginx, a .NET 11 API built on the `tl-framework` packages in single-tenant mode, and a migrator, over Postgres. Start with [README.md](README.md); the detail is in [docs/](docs/).
 
 This file is the guide for every AI coding tool (Claude Code, Cursor, Codex, …). `CLAUDE.md` only imports it: edit the conventions here.
 

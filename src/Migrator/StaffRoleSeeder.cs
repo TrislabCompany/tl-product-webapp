@@ -1,6 +1,4 @@
 using Api.Features.Staff;
-using Finbuckle.MultiTenant;
-using Finbuckle.MultiTenant.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,8 +26,7 @@ internal static class StaffRoleSeeder
         ArgumentNullException.ThrowIfNull(tenant);
 
         using var scope = services.CreateScope();
-        scope.ServiceProvider.GetRequiredService<IMultiTenantContextSetter>()
-            .MultiTenantContext = new MultiTenantContext<AppTenantInfo>(tenant);
+        using var tenantUse = scope.ServiceProvider.GetRequiredService<ITenantAccessor>().Use(tenant);
 
         var roles = scope.ServiceProvider.GetRequiredService<RoleManager<TrislabRole>>();
         var role = await roles.FindByNameAsync(RoleName);
@@ -78,7 +75,6 @@ internal static class StaffRoleSeeder
             EmailConfirmed = true,
             FirstName = "Demo",
             LastName = "Staff",
-            IsActive = true,
         };
         var created = await users.CreateAsync(user, TestDataSeeder.DemoPassword);
         if (!created.Succeeded)
@@ -86,6 +82,8 @@ internal static class StaffRoleSeeder
             logger.LogWarning("The demo staff user was not created: {Errors}", string.Join("; ", created.Errors.Select(e => e.Code)));
             return;
         }
+
+        await TestDataSeeder.AddMembershipAsync(provider, user);
 
         await users.AddToRoleAsync(user, RoleName);
         logger.LogInformation("Created the demo staff user");

@@ -4,7 +4,7 @@ The framework modules this app registers, what each does, and how to choose, add
 
 ## 1. The modules
 
-Every module declares which tenancy modes it supports. A webapp runs in single-tenant mode, so this starter registers every module that supports it. `Multitenancy` and `Billing` need a tenant catalog and are never registered here: `ModuleLoader.SelectSupported` would drop them, and a module listed by hand that the mode does not support stops the start-up with a message that names it.
+Every module declares which tenancy modes it supports. A webapp runs in single-tenant mode, so this starter registers every module that supports it. `Multitenancy` and `SubscriptionsUsage` need a tenant catalog and are never registered here: `ModuleLoader.SelectSupported` would drop them, and a module listed by hand that the mode does not support stops the start-up with a message that names it.
 
 | Module | What it does | Keep it? |
 | --- | --- | --- |
@@ -46,4 +46,4 @@ The optional `/admin` area is a feature of the starter, not a module: it uses Id
 
 ## 5. Test data
 
-The framework's `seed-demo` is refused in single-tenant mode, because it creates demo tenants. The migrator's own `TestDataSeeder` (`src/Migrator/TestDataSeeder.cs`) seeds demo data for the one tenant, only where `SEED_TEST_DATA` is `true`: a demo user (`user@example.com`, the public password `Password123!`) and the sample items. It is idempotent. Add the demo data of each feature or module of the product to it; it must never run where real people sign in.
+The framework's `seed-demo` is refused in single-tenant mode, because it creates demo tenants. The migrator's own `TestDataSeeder` (`src/Migrator/TestDataSeeder.cs`) seeds demo data for the one tenant, only where `SEED_TEST_DATA` is `true`: a demo user (`user@example.com`, the public password `Password123!`) and the sample items. Users are global accounts, and a membership gives one access to the tenant, so the seeder gives each demo user an accepted membership before its roles. It is idempotent. Add the demo data of each feature or module of the product to it; it must never run where real people sign in.

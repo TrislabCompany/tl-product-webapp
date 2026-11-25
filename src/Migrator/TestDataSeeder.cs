@@ -1,12 +1,11 @@
 using Api.Data;
 using Api.Features.Items;
-using Finbuckle.MultiTenant;
-using Finbuckle.MultiTenant.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Trislab.Framework.Shared.Multitenancy;
+using Trislab.Modules.Identity.Data;
 using Trislab.Modules.Identity.Domain;
 
 namespace Migrator;
@@ -29,8 +28,7 @@ internal sealed class TestDataSeeder(IServiceProvider services, ILogger<TestData
         ArgumentNullException.ThrowIfNull(tenant);
 
         using var scope = services.CreateScope();
-        scope.ServiceProvider.GetRequiredService<IMultiTenantContextSetter>()
-            .MultiTenantContext = new MultiTenantContext<AppTenantInfo>(tenant);
+        using var tenantUse = scope.ServiceProvider.GetRequiredService<ITenantAccessor>().Use(tenant);
 
         await SeedDemoUserAsync(scope.ServiceProvider);
         await StaffRoleSeeder.SeedDemoStaffAsync(scope.ServiceProvider, logger); // feature:staff-area
@@ -52,7 +50,6 @@ internal sealed class TestDataSeeder(IServiceProvider services, ILogger<TestData
             EmailConfirmed = true,
             FirstName = "Demo",
             LastName = "User",
-            IsActive = true,
         };
         var created = await users.CreateAsync(user, DemoPassword);
         if (!created.Succeeded)
@@ -61,8 +58,23 @@ internal sealed class TestDataSeeder(IServiceProvider services, ILogger<TestData
             return;
         }
 
+        await AddMembershipAsync(provider, user);
+
         await users.AddToRoleAsync(user, "Basic");
         logger.LogInformation("Created the demo user");
+    }
+
+    /// <summary>
+    /// Users are global accounts; a membership gives one access to this tenant. A demo user is a member from the
+    /// start, as if it had accepted an invitation. Call it in the tenant's scope, before assigning roles.
+    /// </summary>
+    internal static async Task AddMembershipAsync(IServiceProvider provider, TrislabUser user)
+    {
+        var tenant = provider.GetRequiredService<ITenantAccessor>().TenantInfo
+            ?? throw new InvalidOperationException("A demo user is seeded in the tenant's scope.");
+        var db = provider.GetRequiredService<IdentityDbContext>();
+        db.TenantMemberships.Add(TenantMembership.CreateAccepted(user.Id, tenant.Id));
+        await db.SaveChangesAsync();
     }
 
     private async Task SeedItemsAsync(AppDbContext db, CancellationToken cancellationToken)

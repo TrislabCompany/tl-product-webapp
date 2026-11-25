@@ -7,6 +7,7 @@ using Api.Features.Items;
 using Api.Platform;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Trislab.Framework.Eventing;
+using Trislab.Framework.Shared.Health;
 using Trislab.Framework.Shared.Multitenancy;
 using Trislab.Framework.Tenancy;
 using Trislab.Framework.Web;
@@ -113,7 +114,8 @@ api.MapStaffArea(app.Configuration); // feature:staff-area
 
 // Liveness: the process answers. Readiness: every health check passes, Postgres included.
 app.MapHealthChecks("/healthz", new HealthCheckOptions { Predicate = _ => false }).AllowAnonymous();
-app.MapHealthChecks("/readyz").AllowAnonymous();
+// The details-only checks (GET /api/health/details, for Admins) never take the instance out of service.
+app.MapHealthChecks("/readyz", new HealthCheckOptions { Predicate = c => !c.Tags.Contains(HealthCheckTags.DetailsOnly) }).AllowAnonymous();
 
 app.Logger.LogInformation("Starting in the environment {Environment}", app.Configuration["Platform:Environment"]);
 
