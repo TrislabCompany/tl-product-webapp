@@ -33,7 +33,7 @@ The framework's own migrator is a host of its repository, not a package, so this
 
 The other replicas wait for the lock, find nothing left to do and exit. When the migrator fails, the new revision never becomes ready, and the previous revision keeps serving. So a revision never serves on a database it doesn't know.
 
-The previous revision runs on the migrated database until the new one is ready, so every migration must be backward compatible ([deployment.md](deployment.md)).
+The previous revision runs on the migrated database until the new one is ready, so every migration must be backward compatible ([deployment.md](deployment.md)). Not yet: in development mode breaking changes are allowed (`AGENTS.md`, "Development mode").
 
 ## 4. A request, from the browser to the database
 

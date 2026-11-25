@@ -40,7 +40,7 @@ A deploy starts a new revision of each app. In `api`, the migrator runs first ([
 
 ## 3. Migrations
 
-The previous revision of `api` keeps serving on the migrated database until the new one is ready, and a rollback never reverses a migration. So every migration is backward compatible, in two steps:
+The previous revision of `api` keeps serving on the migrated database until the new one is ready, and a rollback never reverses a migration. Not yet: in development mode breaking changes are allowed (`AGENTS.md`, "Development mode"). Once a product is in production, every migration is backward compatible, in two steps:
 
 1. One release adds what the new code needs, such as a column or a table, and the code works with and without it.
 2. A later release drops what the code has stopped using.
