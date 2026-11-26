@@ -52,6 +52,8 @@ paths:
   - { path: platform.schema.json, ownership: platform }
   - { path: scripts/check-template-manifest.mjs, ownership: platform }
   - { path: scripts/check-template-manifest.test.mjs, ownership: platform }
+  - { path: scripts/update-from-template.mjs, ownership: platform }
+  - { path: scripts/update-from-template.test.mjs, ownership: platform }
 
   # The product's own from the first day
   - { path: README.md, ownership: product }
