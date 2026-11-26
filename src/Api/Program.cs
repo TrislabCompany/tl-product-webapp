@@ -97,7 +97,8 @@ builder.AddTrislabPlatform(o =>
 builder.Services.AddEventingCore(builder.Configuration);
 
 builder.AddModules(moduleAssemblies);
-builder.Services.AddInvoiceDocumentsSi(); // module:invoice-documents (the Slovenian rule pack; a product adds the packs of the countries it serves)
+// The Slovenian rule pack of InvoiceDocuments; a product adds the packs of the countries it serves. // module:invoice-documents
+builder.Services.AddInvoiceDocumentsSi(); // module:invoice-documents
 
 // The app's own features: the sample's context, on the same Postgres.
 builder.Services.AddAppDbContext(builder.Configuration);
