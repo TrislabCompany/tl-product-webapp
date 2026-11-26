@@ -25,6 +25,9 @@
     <PackageVersion Include="Trislab.Modules.Notifications.Contracts" Version="$(TrislabFrameworkVersion)" /> <!-- module:notifications -->
     <PackageVersion Include="Trislab.Modules.Webhooks" Version="$(TrislabFrameworkVersion)" /> <!-- module:webhooks -->
     <PackageVersion Include="Trislab.Modules.Webhooks.Contracts" Version="$(TrislabFrameworkVersion)" /> <!-- module:webhooks -->
+    <PackageVersion Include="Trislab.Modules.InvoiceDocuments" Version="$(TrislabFrameworkVersion)" /> <!-- module:invoice-documents -->
+    <PackageVersion Include="Trislab.Modules.InvoiceDocuments.Contracts" Version="$(TrislabFrameworkVersion)" /> <!-- module:invoice-documents -->
+    <PackageVersion Include="Trislab.Modules.InvoiceDocuments.Si" Version="$(TrislabFrameworkVersion)" /> <!-- module:invoice-documents -->
     <PackageVersion Include="Mediator.Abstractions" Version="3.0.2" />
     <PackageVersion Include="Mediator.SourceGenerator" Version="3.0.2" />
   </ItemGroup>

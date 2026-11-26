@@ -13,6 +13,7 @@ Every module declares which tenancy modes it supports. A webapp runs in single-t
 | Files | Uploads and downloads with presigned URLs, and the users' avatars | While the product stores files |
 | Notifications | Each user's in-app inbox. Any module adds to it by publishing `UserNotificationRequestedIntegrationEvent` | Optional |
 | Webhooks | The webhooks a user sets up, signed and retried | Optional |
+| InvoiceDocuments | The documents the organisation issues to its own customers: customers and items, quotes, pro formas, invoices, credit notes and advance invoices, numbering that never changes, a PDF, e-mail, marked paid by hand, an export for the accountant. Registered with its Slovenian rule pack (`Trislab.Modules.InvoiceDocuments.Si`, VAT, numbering and the required content); a product adds the packs of the countries it serves. In the staff area, `/admin` lists the documents, creates a draft, issues it, marks an invoice paid and opens the PDF | When the organisation issues invoices |
 
 Each module keeps its tables in a schema of its own and ships its own migrations in its package, so a product that leaves a module out gets none of its tables. The migrator applies them for the one tenant.
 
@@ -42,8 +43,8 @@ A module the framework does not have yet is built in `tl-framework`, never here.
 
 ## 4. The staff area
 
-The optional `/admin` area is a feature of the starter, not a module: it uses Identity, which is always kept, and `init-product --features staff-area` keeps it (without the option, it is removed). How it works and how to switch it on: [staff-area.md](staff-area.md).
+The optional `/admin` area is a feature of the starter, not a module: it uses Identity, which is always kept, and `init-product --features staff-area` keeps it (without the option, it is removed). The invoice pages (`web/src/features/invoice-documents/`) belong to both: they go when either the staff area or the module goes. The documents' API keeps its own permissions, which the Admin role holds; a member of the `Staff` role alone sees a message instead. How it works and how to switch it on: [staff-area.md](staff-area.md).
 
 ## 5. Test data
 
-The framework's `seed-demo` is refused in single-tenant mode, because it creates demo tenants. The migrator's own `TestDataSeeder` (`src/Migrator/TestDataSeeder.cs`) seeds demo data for the one tenant, only where `SEED_TEST_DATA` is `true`: a demo user (`user@example.com`, the public password `Password123!`) and the sample items. Users are global accounts, and a membership gives one access to the tenant, so the seeder gives each demo user an accepted membership before its roles. It is idempotent. Add the demo data of each feature or module of the product to it; it must never run where real people sign in.
+The framework's `seed-demo` is refused in single-tenant mode, because it creates demo tenants. The migrator's own `TestDataSeeder` (`src/Migrator/TestDataSeeder.cs`) seeds demo data for the one tenant, only where `SEED_TEST_DATA` is `true`: a demo user (`user@example.com`, the public password `Password123!`) and the sample items, and with InvoiceDocuments a made-up Slovenian issuer, two customers, three items and one document of each kind and state (`src/Migrator/InvoiceDocumentsDemoData.cs`, made through the module's own commands). Users are global accounts, and a membership gives one access to the tenant, so the seeder gives each demo user an accepted membership before its roles. It is idempotent. Add the demo data of each feature or module of the product to it; it must never run where real people sign in.

@@ -77,3 +77,31 @@ input:not([type="checkbox"]) {
 [role="alert"] {
   color: #c62828;
 }
+
+/* A wide table scrolls inside its own frame, so the page never scrolls sideways on a phone. */
+.table-frame {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.table-frame table {
+  border-collapse: collapse;
+  min-width: 100%;
+}
+
+.table-frame th,
+.table-frame td {
+  padding: 0.3rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  white-space: nowrap;
+}
+
+.table-frame .number {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+form[aria-labelledby="new-draft"] {
+  flex-wrap: wrap;
+}

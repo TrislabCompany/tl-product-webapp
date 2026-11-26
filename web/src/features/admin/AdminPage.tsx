@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { ApiError, getSummary, signIn, type StaffSummary } from "./api";
 import { readToken, saveToken } from "./session";
+import InvoiceDocumentsSection from "../invoice-documents/InvoiceDocumentsSection"; // module:invoice-documents
 
 // The staff area at /admin: a sign-in form, then what only staff may see. The API refuses every staff request
 // without a signed-in user who holds the staff permission, so this page only shows what the API allows
@@ -97,6 +98,7 @@ function Summary({ token, onSignOut }: { token: string; onSignOut: () => void })
           <dd>{summary.doneItems}</dd>
         </dl>
       )}
+      {summary !== undefined && <InvoiceDocumentsSection token={token} />} {/* module:invoice-documents */}
     </>
   );
 }

@@ -18,6 +18,8 @@ using Trislab.Framework.Web.Modules;
 using Trislab.Modules.Auditing; // module:auditing
 using Trislab.Modules.Files; // module:files
 using Trislab.Modules.Identity; // module:identity
+using Trislab.Modules.InvoiceDocuments; // module:invoice-documents
+using Trislab.Modules.InvoiceDocuments.Si; // module:invoice-documents
 using Trislab.Modules.Notifications; // module:notifications
 using Trislab.Modules.Webhooks; // module:webhooks
 
@@ -79,6 +81,7 @@ var moduleAssemblies = new Assembly[]
     typeof(FilesModule).Assembly, // module:files
     typeof(NotificationsModule).Assembly, // module:notifications
     typeof(WebhooksModule).Assembly, // module:webhooks
+    typeof(InvoiceDocumentsModule).Assembly, // module:invoice-documents
 };
 
 StaffPermissions.Register(); // feature:staff-area
@@ -102,6 +105,7 @@ builder.AddTrislabPlatform(o =>
 });
 builder.Services.AddEventingCore(builder.Configuration);
 builder.AddModules(moduleAssemblies);
+builder.Services.AddInvoiceDocumentsSi(); // module:invoice-documents
 builder.Services.AddAppDbContext(builder.Configuration);
 builder.Services.AddScoped<TestDataSeeder>();
 

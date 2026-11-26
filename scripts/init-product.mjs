@@ -26,6 +26,7 @@ export const MARKED_FILES = [
   'src/Migrator/TestDataSeeder.cs',
   'src/Directory.Packages.props',
   'web/src/App.tsx',
+  'web/src/features/admin/AdminPage.tsx',
   'web/src/i18n.ts',
 ];
 
