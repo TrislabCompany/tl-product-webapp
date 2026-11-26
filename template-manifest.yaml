@@ -76,6 +76,8 @@ paths:
   - { path: web/src/i18n.test.ts, ownership: shared }
   - { path: web/src/i18next.d.ts, ownership: shared }
   - { path: web/src/test-setup.ts, ownership: shared }
+  - { path: web/src/styles.css, ownership: shared }
+  - { path: web/src/theme.test.ts, ownership: shared }
   - { path: web/src/**, ownership: product }
   - { path: web/public/**, ownership: product }
   - { path: web/index.html, ownership: product }

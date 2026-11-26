@@ -99,6 +99,7 @@ Every base image is pinned by digest. Renovate will keep the versions current; u
 - [Local ports](docs/local-ports.md): the port blocks, the database and compose project of each product, a shared Postgres, and the Aspire dashboard.
 - [Architecture](docs/architecture.md): the images, the apps, the migrator, where data lives, the request path, the front end and the framework.
 - [Modules](docs/modules.md): the framework modules registered here, `init-product`, adding a module, and the test data.
+- [The look of the app](docs/theme.md): the Trislab theme, the one file that restyles a product, and the colour check.
 - [Staff area](docs/staff-area.md): the optional `/admin` area, its permission and role, how to switch it on, and how to add a staff page.
 - [Configuration](docs/configuration.md): the settings, `PlatformConfiguration.cs`, the tenancy options, `/config.json`, the `/api` upstream, mail, and how to add a setting or a secret.
 - [Deployment](docs/deployment.md): Environments, deploy, release and promote, migrations, `platform.yaml` and the caps, access to the framework's packages, and how to ask for more. Section 7: the steps for developers.

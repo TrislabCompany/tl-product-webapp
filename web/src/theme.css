@@ -1,0 +1,16 @@
+/* The product's own look: the one file that restyles this app (docs/theme.md).
+
+   The app starts in the Trislab theme of framework-ui. Override here only the variables the product
+   changes, under :root for light and .dark for dark, for example:
+
+     :root { --primary: #2563eb; --primary-foreground: #ffffff; --primary-hover: #1d4ed8;
+             --primary-text: #1d4ed8; --ring: #1d4ed8; }
+     .dark { --primary: #3b82f6; --primary-foreground: #0f172a; --primary-hover: #60a5fa;
+             --primary-text: #60a5fa; --ring: #60a5fa; }
+
+   Keep the contrast of WCAG 2 AA: 4.5:1 for every --*-foreground on its colour, and for
+   --primary-text and --muted-foreground on --background, --card and --muted. For another font,
+   set --font-sans here and remove the fonts.css import from styles.css.
+
+   The variables are listed in framework-ui's README, "Theme". This file is the product's: a
+   template update never changes it. */

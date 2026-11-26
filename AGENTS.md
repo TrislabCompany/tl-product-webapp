@@ -91,7 +91,7 @@ The rules for writing code are in `.claude/rules/`. Each has `paths:` front matt
 | --- | --- |
 | Where code goes: features, `Program.cs`, platform settings, the front end's API calls | `architecture.md` |
 | C# style, naming, async, errors | `coding-csharp.md` |
-| TypeScript and React style, errors, naming, texts in both languages | `coding-typescript.md` |
+| TypeScript and React style, errors, naming, texts in both languages, colours | `coding-typescript.md` |
 | Log messages, levels, data never logged, the trace id | `logging.md` |
 | Unit, integration and front-end tests | `testing.md` |
 | Routes, errors, JSON, compatibility, migrations | `api-contracts.md` |
@@ -115,6 +115,7 @@ The rules for writing code are in `.claude/rules/`. Each has `paths:` front matt
 - **Don't change the workflows** in `.github/workflows/`: they only call the platform's reusable workflows. Ask the platform team.
 - **No framework source here.** Use the packages. A missing feature or a bug in a module is a change in `tl-framework`; do not copy the code, and do not write a log formatter, correlation middleware or tenancy code.
 - **Every endpoint needs a signed-in user unless it opts out.** The framework protects all of them; a public endpoint says `.AllowAnonymous()` (the sample's items and `/api/health/info` do). A staff or admin endpoint requires a permission, never just a sign-in: staff endpoints go inside the group of `Features/Staff/StaffEndpoints.cs`, which `StaffAreaTests` checks.
+- **Colours only in `web/src/theme.css`.** Everything else uses the theme's variables; `pnpm --dir web test` fails on a raw colour ([docs/theme.md](docs/theme.md)).
 - **Every text on screen is in both languages.** A text goes in `web/src/locales/en-US/<namespace>.json` and `sl-SI/`, and is read with `t()`; the test `i18n.test.ts` fails on a key one language lacks.
 - **No secrets** in the repository, the images or `appsettings.json`. They reach the app as environment variables from the stamp's Key Vault. Never read `.env`; `.env.example` lists the names. A token for GitHub Packages is `PACKAGES_TOKEN`, never in a file.
 - **Docs travel with the change.** A change to a setting, an endpoint, an image or the way the app runs isn't done until `README.md` and `docs/` match it.
