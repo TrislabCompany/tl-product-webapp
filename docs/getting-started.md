@@ -74,11 +74,16 @@ pnpm --dir web dev                    # http://localhost:5173
 ## 4. Run the tests
 
 ```sh
-dotnet test src/App.slnx
-pnpm --dir web test
+node scripts/affected-tests.mjs             # the tests this branch affects, compared with origin/main
+node scripts/affected-tests.mjs --dry-run   # only which parts, and why
+node scripts/affected-tests.mjs --all       # everything
 ```
 
-These are the commands `ci / ci` runs:
+The script has two parts: `api` runs `dotnet test src/App.slnx`, and `web` runs `pnpm --dir web install` and `pnpm --dir web test`. Each changed path picks its parts by the rules at the top of the script: `src/` the API, `web/`, `scripts/` and the manifest the front end, documentation nothing. A path no rule knows runs both, so a new folder is tested until it gets its rule; a product adds its own folders there.
+
+`ci / ci` runs the same script. On a PR it runs the parts the PR affects, and a PR that changes only documentation runs no test, only the Markdown lint and the template manifest check. A push to `main`, the merge, runs everything, and a failure there opens the issue "main is failing: ci / ci".
+
+The tests of each part:
 
 | Tests | Where | What they check |
 | --- | --- | --- |
@@ -92,3 +97,7 @@ These are the commands `ci / ci` runs:
 docker build -f src/Api/Dockerfile .
 docker build -f web/Dockerfile web
 ```
+
+## 5. Vulnerable dependencies
+
+Every restore audits every NuGet package, direct and transitive, against the known advisories (`NuGetAuditMode` `all` in `src/Directory.Build.props`). A finding stays a warning, so an advisory published today doesn't fail a PR that changes something else. The daily `audit` workflow checks the NuGet and pnpm packages, and fails on an advisory of moderate severity or higher. A failure opens the issue "main is failing: audit". Fix it in its own PR, or accept the advisory in `.audit-accepted` with a reason and an expiry date.
