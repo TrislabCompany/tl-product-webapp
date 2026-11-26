@@ -24,7 +24,7 @@ This file is owned by the platform and is the same in every template. A product 
   commit: <full sha of that tag's commit>
   ```
 
-- **The template repository** is `TrislabCompany/tl-<template>`, e.g. `tl-template-website`. Its releases are tags `<template>/vX.Y.Z`.
+- **The template repository** is `TrislabCompany/tl-template-website` for `template-website`, `TrislabCompany/tl-product-webapp` for `template-webapp` and `TrislabCompany/tl-product-saas` for `template-saas`. Its releases are tags `<template>/vX.Y.Z`.
 - **Base** is the release in `.template-version`; **target** is the release this update brings.
 
 ## Steps
@@ -34,7 +34,7 @@ This file is owned by the platform and is the same in every template. A product 
 3. **Fetch the template's tags** into their own namespace, never into `refs/tags`:
 
    ```bash
-   git fetch --no-tags https://github.com/TrislabCompany/tl-<template>.git "refs/tags/<template>/*:refs/template/<template>/*"
+   git fetch --no-tags https://github.com/TrislabCompany/<template repository>.git "refs/tags/<template>/*:refs/template/<template>/*"
    ```
 
 4. **Choose the target:** the next minor version after the base (`v0.1.x` → the highest `v0.2.*`), never more than one minor per PR. Within the same minor, the highest patch. When there is none, stop: the repository is up to date.

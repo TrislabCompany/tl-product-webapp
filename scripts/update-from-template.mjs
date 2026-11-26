@@ -387,6 +387,8 @@ function mergeShared({ cwd, plan, status, path, here, tmp, done, checkout, remov
   [ours, baseBuf, theirs].forEach((b, i) => writeFileSync(files[i], lf(b)));
   const r = git(cwd, ['merge-file', '-p', '-L', 'this repository', '-L', plan.base, '-L', plan.target, ...files], { allowFail: true });
   if (r.status < 0 || r.status === null || r.status > 127) throw new Error(`git merge-file failed on ${path}: ${r.stderr}`);
+  // This repository already has the template's change.
+  if (r.status === 0 && r.stdout === lf(ours)) return;
   writeFileSync(join(cwd, path), crlf ? r.stdout.replace(/\n/g, '\r\n') : r.stdout);
   if (r.status > 0) done.conflicts.push(`\`${path}\`: ${r.status} conflict${r.status > 1 ? 's' : ''}, marked in the file`);
   else done.shared.push(`${status} ${path} (merged with this repository's changes)`);

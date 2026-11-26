@@ -159,6 +159,7 @@ const v010 = release(template, 'v0.1.0', {
   'docs/gone.md': 'gone\n',
   'docs/gone-kept.md': 'kept\n',
   'docs/same.md': 'same\n',
+  'docs/has-it.md': lines('x', 'y', 'z'),
   'docs/image.bin': Buffer.from([1, 0, 2]),
   'scripts/run.sh': '#!/bin/sh\necho 1\n',
 });
@@ -178,6 +179,7 @@ const v020 = release(template, 'v0.2.0', {
   'docs/gone.md': null,
   'docs/gone-kept.md': null,
   'docs/new.md': 'new\n',
+  'docs/has-it.md': lines('x template', 'y', 'z'),
   'docs/image.bin': Buffer.from([1, 0, 3]),
 });
 release(template, 'v0.3.0', { 'docs/upgrading/template-v0.3.0.md': '# v0.3.0\n', 'docs/new.md': 'newer\n' });
@@ -197,6 +199,7 @@ function product(name, extra = {}) {
     'docs/gone.md': 'gone\n',
     'docs/gone-kept.md': 'kept, and changed here\n',
     'docs/same.md': 'same\n',
+    'docs/has-it.md': lines('x template', 'y', 'z mine'),
     'docs/image.bin': Buffer.from([1, 0, 9]),
     'scripts/run.sh': '#!/bin/sh\necho 1\n',
     ...extra,
@@ -242,6 +245,9 @@ test('applies the next minor path by path, and lists what a person must do', () 
   assert.match(done.conflicts.join('\n'), /docs\/image\.bin.*binary/);
   assert.deepEqual(done.kept, ['`docs/gone-kept.md`: deleted in the template, changed here; kept']);
   assert.deepEqual(done.suggestions.map((s) => s.path), ['README.md']);
+  // A merge that changes nothing here is not listed.
+  assert.equal(done.shared.some((s) => s.includes('docs/has-it.md')), false);
+  assert.equal(read('docs/has-it.md'), lines('x template', 'y', 'z mine'));
   assert.equal(done.needsAgent, true);
 
   const { title, body } = buildReport(plan, done, { repo: 'acme-webapp-x' });
