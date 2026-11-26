@@ -23,6 +23,6 @@ jobs:
       id-token: write
       attestations: write
       actions: read
-    uses: TrislabCompany/tl-platform/.github/workflows/app-deploy.yml@app-workflows/v0.4.0
+    uses: TrislabCompany/tl-platform/.github/workflows/app-deploy.yml@app-workflows/v0.6.0-rc.1
     secrets:
       packages-token: ${{ secrets.PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}
