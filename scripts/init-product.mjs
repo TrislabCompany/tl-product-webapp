@@ -30,13 +30,16 @@ export const MARKED_FILES = [
   'web/src/i18n.ts',
 ];
 
-/** Files whose lines that end with `<!-- starter-only -->` describe the starter, and go with it. */
+/**
+ * Files whose lines that end with `<!-- starter-only -->` describe the starter, and go with it. In a table row the marker
+ * may stand before the closing pipe, so the row keeps the pipes the Markdown lint asks for.
+ */
 export const STARTER_NOTES = ['AGENTS.md'];
 
 export function removeStarterLines(text) {
   return text
     .split('\n')
-    .filter((line) => !/<!-- starter-only -->\s*$/.test(line.replace(/\r$/, '')))
+    .filter((line) => !/<!-- starter-only -->\s*\|?\s*$/.test(line.replace(/\r$/, '')))
     .join('\n');
 }
 

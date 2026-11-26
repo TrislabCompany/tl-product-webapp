@@ -62,6 +62,10 @@ test('removes the lines that describe the starter', () => {
     removeStarterLines('a\n| b | c | <!-- starter-only -->\nd <!-- starter-only -->\r\ne\n'),
     'a\ne\n',
   );
+  // The marker inside the last cell, before the closing pipe.
+  assert.equal(removeStarterLines('| a | b |\n| c | d <!-- starter-only --> |\n| e | f |\n'), '| a | b |\n| e | f |\n');
+  // Only at the end of a line: a marker in the middle of a sentence stays.
+  assert.equal(removeStarterLines('the `<!-- starter-only -->` marker, see below\n'), 'the `<!-- starter-only -->` marker, see below\n');
 });
 
 test('parses the slug and the port block, and rejects the blocks of the starters', () => {
