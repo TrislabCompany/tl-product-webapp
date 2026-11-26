@@ -28,8 +28,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { name: only-identity, modules: none }
-          - { name: every-module, modules: 'auditing,files,notifications,webhooks,invoice-documents' }
+          - { name: only-identity, modules: none, features: none }
+          - { name: every-module, modules: 'auditing,files,notifications,webhooks,invoice-documents', features: none }
+          # The staff area with every module, so its pages (and the invoice pages in it) are built and tested.
+          - { name: staff-area, modules: 'auditing,files,notifications,webhooks,invoice-documents', features: staff-area }
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
@@ -65,7 +67,7 @@ jobs:
           cp -r web/node_modules /tmp/init-product/web/node_modules
           cd /tmp/init-product
           git init -q && git add -A
-          node scripts/init-product.mjs --modules '${{ matrix.modules }}' --name "Init test" --slug init-test --port-block 2
+          node scripts/init-product.mjs --modules '${{ matrix.modules }}' --features '${{ matrix.features }}' --name "Init test" --slug init-test --port-block 2
           # Port block 2 and the database trislab_init_test (docs/local-ports.md).
           grep -qx 'WEB_PORT=8100' .env.example
           grep -qx 'POSTGRES_PORT=5435' .env.example
