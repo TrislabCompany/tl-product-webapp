@@ -29,7 +29,7 @@ jobs:
       matrix:
         include:
           - { name: only-identity, modules: none }
-          - { name: every-module, modules: 'auditing,files,notifications,webhooks' }
+          - { name: every-module, modules: 'auditing,files,notifications,webhooks,invoice-documents' }
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
