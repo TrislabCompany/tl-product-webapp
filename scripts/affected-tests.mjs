@@ -42,6 +42,7 @@ export const RULES = [
   ['.github/workflows/audit.yml', []],
   ['.github/workflows/template-release.yml', []],
   ['.github/workflows/template-init.yml', []],
+  ['.github/workflows/template-update.yml', []],
   // What decides the tests themselves runs everything.
   ['scripts/affected-tests.mjs', 'all'],
   ['.github/workflows/ci.yml', 'all'],
