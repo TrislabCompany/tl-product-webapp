@@ -55,11 +55,12 @@ The same block starts the `AGENTS.md` of every Trislab repository, so an agent i
 ```bash
 export PACKAGES_TOKEN=<a personal token with read:packages>   # docs/getting-started.md
 cp .env.example .env && docker compose up --build    # the whole app on http://localhost:8080
+node scripts/affected-tests.mjs                      # the tests this branch affects (--all for everything)
 dotnet test src/App.slnx                             # API tests; the integration tests need Docker
 pnpm --dir web install && pnpm --dir web test        # tsc, ESLint, Vitest and the template checks
 ```
 
-Run both test commands before every push: `ci / ci` runs them, builds the three images, scans them with Trivy and checks `platform.yaml`. Running the parts separately: [docs/getting-started.md](docs/getting-started.md).
+Run `node scripts/affected-tests.mjs` before every push: `ci / ci` runs the same parts, builds the three images, scans them with Trivy and checks `platform.yaml`. A push to `main` runs everything. Before starting work, check the open issues labelled `ci-main`: a red `main` is fixed by the next PR. How the parts are picked: [docs/getting-started.md](docs/getting-started.md#4-run-the-tests).
 
 ## Development mode: breaking changes are allowed
 
