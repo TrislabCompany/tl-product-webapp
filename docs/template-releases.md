@@ -38,7 +38,7 @@ The workflow `template-init.yml` copies the repository on every PR and push to `
 
 ## Changing the template
 
-Every change is a PR to `main`, and `ci / ci` must pass. `update-from-template` and `docs/upgrading/README.md` have the same process in all three templates, apart from `metadata.owner` and the examples of the ownership table: change them in all three together. The `release` skill and `docs/deployment.md` of this template describe Container Apps and are its own.
+Every change is a PR to `main`, and `ci / ci` must pass. `update-from-template`, `scripts/update-from-template.mjs` (with its tests) and `docs/upgrading/README.md` have the same process in all three templates, apart from `metadata.owner` and the examples of the ownership table: change them in all three together. The `release` skill and `docs/deployment.md` of this template describe Container Apps and are its own.
 
 How developers deploy and release is written in two places that must agree: `docs/deployment.md` (section 7, "Steps for developers") and the `release` skill, which links to those headings and to the workflows' names. Change them together, and keep the headings the skill links to: changing one is breaking. A product repository gets the change only through a template release and its `update-from-template` PR, the canary first ([Releasing](#releasing)).
 

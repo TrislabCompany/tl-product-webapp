@@ -30,7 +30,7 @@ The same block starts the `AGENTS.md` of every Trislab repository, so an agent i
   - a webapp: a tag `vX.Y.Z`, made by the `release` skill;
   - the starter: `template-webapp/vX.Y.Z`, made by the `template-release` workflow.
 - **Skills:** `.agents/skills/`, listed under [Skills](#skills).
-- **Scripts:** `node scripts/check-template-manifest.mjs`, the commands of the [build and test](#build-and-test) section, and in the starter `node scripts/init-product.mjs` (once, in a new copy). Add a script when the same kind of work comes back; print a summary and the errors, not a dump.
+- **Scripts:** `node scripts/check-template-manifest.mjs`, `node scripts/update-from-template.mjs` (the routine part of a template update), the commands of the [build and test](#build-and-test) section, and in the starter `node scripts/init-product.mjs` (once, in a new copy). Add a script when the same kind of work comes back; print a summary and the errors, not a dump.
 
 ## Repository map
 
@@ -45,7 +45,7 @@ The same block starts the `AGENTS.md` of every Trislab repository, so an agent i
 | `platform.yaml` | The images and each app's sizing, within the stamp's caps ([docs/deployment.md](docs/deployment.md#5-platformyaml-and-the-caps)) |
 | `.github/workflows/` | `ci.yml` (the check `ci / ci`), `deploy.yml`, `release.yml`: they call the platform's reusable workflows |
 | `template-manifest.yaml` | The ownership of every path, for `update-from-template` ([docs/template-releases.md](docs/template-releases.md)); starter only <!-- starter-only --> |
-| `scripts/` | The manifest check, and in the starter `init-product.mjs` and its choices |
+| `scripts/` | The affected tests, the manifest check, the template update (`update-from-template.mjs`), and in the starter `init-product.mjs` and its choices |
 | `.claude/rules/` | The coding rules, loaded by path (index below) |
 | `.agents/skills/` | The skills below; the only place skills are written |
 | `.claude/skills/` | One pointer per skill, with the same front matter, so that Claude Code lists it |
@@ -106,7 +106,7 @@ The rules for writing code are in `.claude/rules/`. Each has `paths:` front matt
 ## Docs and tooling
 
 - The build runs with `TreatWarningsAsErrors`: a warning fails it. Fix it; a suppression needs a `Justification`.
-- Tools are pinned: the SDK in `global.json`, pnpm in `web/package.json` (`packageManager`), the framework in `src/Directory.Packages.props` (`TrislabFrameworkVersion`, raised by Renovate to a published version; take every MINOR in order).
+- Tools are pinned: the SDK in `global.json`, pnpm in `web/package.json` (`packageManager`), the framework in `src/Directory.Packages.props` (`TrislabFrameworkVersion`: in the starter Renovate raises it to each published version, in a webapp only a template update does ([docs/upgrading/README.md](docs/upgrading/README.md#the-framework-version)); take every MINOR in order).
 - `README.md` says what the app is and how to run it; `docs/` how it works on the platform; `.claude/rules/` how code is written here. Change the rule when you change the convention.
 
 ## Rules
