@@ -58,6 +58,7 @@ paths:
   - { path: .github/CODEOWNERS, ownership: product }
   - { path: LICENSE, ownership: platform }
   - { path: .trivyignore, ownership: product }
+  - { path: .audit-accepted, ownership: product }
   - { path: platform.yaml, ownership: product }
   - { path: docs/brief.md, ownership: product }
   - { path: web/pnpm-lock.yaml, ownership: product }

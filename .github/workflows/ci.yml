@@ -4,7 +4,7 @@ name: ci
 # with Trivy and checks platform.yaml, on every PR and every push to main.
 # Pushes nothing. All steps live in the reusable workflow in tl-platform,
 # pinned by tag; the job is named ci like the one it calls, so the required
-# check is `ci / ci`. Change only the test command and the token here. The
+# check is `ci / ci`. Change only the commands and the token here. The
 # integration tests start their own throw-away Postgres. The framework's
 # packages are on GitHub Packages: the organisation secret PACKAGES_READ_TOKEN
 # (or the workflow's token without it) is passed as packages-token, which the reusable workflow gives the test command as
@@ -12,6 +12,16 @@ name: ci
 # secret. pnpm trusts a token only in ~/.npmrc, so the test command writes it
 # there. The organisation must give this repository the secret
 # (docs/deployment.md).
+#
+# On a PR the test command runs only the parts the PR affects
+# (scripts/affected-tests.mjs, docs/getting-started.md section 4); a push to
+# main runs everything. A PR that changes only documentation builds and tests
+# nothing: it lints the changed Markdown and runs the docs command, the
+# template manifest check, with only the yaml package installed.
+#
+# After a push to main, the job main-failure-issue keeps one issue "main is
+# failing: ci / ci" (label ci-main) open while the check fails on main, and
+# closes it on the next green run.
 
 on:
   pull_request:
@@ -25,12 +35,24 @@ jobs:
     permissions:
       contents: read
       packages: read
-    uses: TrislabCompany/tl-platform/.github/workflows/app-ci.yml@app-workflows/v0.6.0-rc.1
+    uses: TrislabCompany/tl-platform/.github/workflows/app-ci.yml@app-workflows/v0.6.0
     with:
       test-command: >-
         echo "//npm.pkg.github.com/:_authToken=$PACKAGES_TOKEN" >> ~/.npmrc
-        && dotnet test src/App.slnx
-        && pnpm --dir web install --frozen-lockfile
-        && pnpm --dir web test
+        && node scripts/affected-tests.mjs
+      docs-command: >-
+        npm install --no-save --no-package-lock --silent "yaml@$(node -p "require('./web/package.json').devDependencies.yaml")"
+        && node scripts/check-template-manifest.mjs
     secrets:
       packages-token: ${{ secrets.PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}
+
+  main-failure-issue:
+    needs: [ci]
+    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      actions: read
+      issues: write
+      pull-requests: read
+    uses: TrislabCompany/tl-platform/.github/workflows/main-failure-issue.yml@app-workflows/v0.6.0
+    with:
+      result: ${{ needs.ci.result }}
