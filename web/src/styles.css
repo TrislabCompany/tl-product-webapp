@@ -1,12 +1,20 @@
+/* The layout of the app. Every colour, the font and the radius are variables of the Trislab theme
+   (framework-ui's theme.css); the product's own look is in ./theme.css, loaded last, the only file
+   with colours (docs/theme.md). `pnpm test` fails on a raw colour anywhere else in src/. */
+@import "@trislabcompany/framework-ui/theme.css";
+@import "@trislabcompany/framework-ui/fonts.css";
+@import "./theme.css";
+
 :root {
-  color-scheme: light dark;
-  font-family: system-ui, sans-serif;
   line-height: 1.5;
-  --accent: #2457c5;
 }
 
 body {
   margin: 0;
+}
+
+a {
+  color: var(--primary-text);
 }
 
 header {
@@ -14,10 +22,12 @@ header {
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
 }
 
 .brand {
+  font-family: var(--font-display);
   font-weight: 600;
   color: inherit;
   text-decoration: none;
@@ -32,15 +42,22 @@ header {
 .environment {
   padding: 0.1rem 0.5rem;
   border-radius: 999px;
-  background: var(--accent);
-  color: #fff;
+  background: var(--primary-soft);
+  color: var(--primary-text);
   font-size: 0.8rem;
+  font-weight: 500;
 }
 
 main {
   max-width: 40rem;
   margin: 0 auto;
   padding: 1rem;
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
+  line-height: 1.25;
 }
 
 form {
@@ -69,13 +86,67 @@ form {
   flex: 1;
 }
 
+input,
+select,
+button {
+  font: inherit;
+}
+
+input:not([type="checkbox"]),
+select {
+  padding: 0.3rem 0.5rem;
+  background: var(--background);
+  color: var(--foreground);
+  border: 1px solid var(--input);
+  border-radius: var(--radius-sm);
+}
+
 input:not([type="checkbox"]) {
   flex: 1;
-  padding: 0.3rem 0.5rem;
+}
+
+input[type="checkbox"] {
+  accent-color: var(--primary);
+}
+
+/* A form's submit button is the primary action, in the accent; every other button is secondary. */
+button {
+  padding: 0.3rem 0.9rem;
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--accent);
+}
+
+button[type="submit"] {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: transparent;
+}
+
+button[type="submit"]:hover {
+  background: var(--primary-hover);
+}
+
+button:disabled {
+  background: var(--muted);
+  color: var(--muted-foreground);
+  cursor: not-allowed;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }
 
 [role="alert"] {
-  color: #c62828;
+  color: var(--destructive);
 }
 
 /* A wide table scrolls inside its own frame, so the page never scrolls sideways on a phone. */
@@ -93,8 +164,13 @@ input:not([type="checkbox"]) {
 .table-frame td {
   padding: 0.3rem 0.5rem;
   text-align: left;
-  border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  border-bottom: 1px solid var(--border);
   white-space: nowrap;
+}
+
+.table-frame th {
+  color: var(--muted-foreground);
+  font-weight: 500;
 }
 
 .table-frame .number {

@@ -2,6 +2,7 @@
 paths:
   - "web/src/**/*.ts"
   - "web/src/**/*.tsx"
+  - "web/src/**/*.css"
 ---
 
 # TypeScript coding standards
@@ -30,6 +31,10 @@ Checked by: `pnpm --dir web test`, which runs `tsc --noEmit` (strict), ESLint (`
 - Every text on screen goes in `web/src/locales/en-US/<namespace>.json` and the same key in `sl-SI/`, and is read with `useTranslation(<namespace>)` and `t()`. No literal text in JSX or in an attribute such as `aria-label`. `web/src/i18n.test.ts` fails on a key one language lacks or on different `{{placeholders}}`; the keys are typed against the English catalogs (`i18next.d.ts`), so `tsc` fails on a key that does not exist.
 - A new namespace is added to `eagerCatalogs` in `web/src/i18n.ts` and to both language folders. Dates and numbers go through the formatters of `@trislabcompany/framework-ui` (`formatDate`, `formatNumber`, `formatMoney`), in the language on screen; the API sends values, never formatted text.
 - `@trislabcompany/framework-ui` is the framework's package: a missing feature or a bug in it is a change in `tl-framework`, not a copy here.
+
+## Look
+
+- Colours, the font and the radius are the theme's variables (`var(--primary)`, `var(--border)`, `var(--radius-sm)`), never a value. The product's look is `web/src/theme.css`, the only file with colours; `styles.css` holds the layout ([docs/theme.md](../../docs/theme.md)). `framework-ui-check-colors src` fails on a hex value, a colour function or Tailwind's palette anywhere else, and `src/theme.test.ts` on a variable set outside `theme.css`.
 
 ## Naming
 
