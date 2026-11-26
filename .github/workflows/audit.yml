@@ -1,0 +1,44 @@
+name: audit
+
+# Every day, audits the dependencies against the known advisories: the NuGet
+# packages of src/App.slnx, direct and transitive, and the pnpm packages of web/
+# (tl-platform dependency-audit.yml). So a new advisory shows up within a day,
+# as an issue, instead of failing some unrelated PR.
+#
+# It fails on an advisory of moderate severity or higher that isn't accepted in
+# .audit-accepted, with a reason and an expiry date. A failure opens the issue
+# "main is failing: audit" (label ci-main), and the next green run closes it
+# (docs/getting-started.md section 5). The framework's packages are on GitHub
+# Packages, so it gets the same token as ci.yml.
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    permissions:
+      contents: read
+      packages: read
+    uses: TrislabCompany/tl-platform/.github/workflows/dependency-audit.yml@app-workflows/v0.6.0
+    secrets:
+      packages-token: ${{ secrets.PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}
+
+  main-failure-issue:
+    needs: [audit]
+    if: always()
+    permissions:
+      actions: read
+      issues: write
+      pull-requests: read
+    uses: TrislabCompany/tl-platform/.github/workflows/main-failure-issue.yml@app-workflows/v0.6.0
+    with:
+      result: ${{ needs.audit.result }}
+      check: audit

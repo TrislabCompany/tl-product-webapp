@@ -27,12 +27,12 @@ flowchart LR
 
 | Step | Workflow | What happens |
 | --- | --- | --- |
-| Check | `ci.yml`, on every PR and push to `main` | Builds the three images, runs `dotnet test src/App.slnx` and `pnpm --dir web test`, scans the images with Trivy and checks `platform.yaml`. Restores the framework's packages with the workflow's token ([section 8](#8-access-to-the-frameworks-packages)). Pushes nothing. The check `ci / ci` must pass before a PR can merge |
+| Check | `ci.yml`, on every PR and push to `main` | Builds the three images, runs the tests the PR affects (`node scripts/affected-tests.mjs`; every test on `main`), scans the images with Trivy and checks `platform.yaml`. Restores the framework's packages with the workflow's token ([section 8](#8-access-to-the-frameworks-packages)). Pushes nothing. The check `ci / ci` must pass before a PR can merge. A PR of only documentation lints its Markdown and checks the template manifest. A failure on `main` opens the issue "main is failing: ci / ci" |
 | Deploy | `deploy.yml`, on every push to `main` | Builds the images once, scans them, pushes them to the GitHub Container Registry (GHCR) as `sha-<commit>` with their software bills of materials, and deploys them to every `dev` tier Environment |
 | Release | `release.yml`, on a tag `vX.Y.Z` on a commit of `main` | Builds nothing. Adds the tag to that commit's images, creates the GitHub Release, and deploys them to every `release` tier Environment |
 | Promote | `promote.yml`, by hand with a version and an Environment | Checks that the version runs healthy in a `release` tier Environment, waits for the reviewers, and deploys the same images. Rolling back is promoting the previous version |
 
-This template has `ci.yml`, `deploy.yml` and `release.yml`. The platform team adds `promote.yml` before the first production Environment. In a template repository, `deploy.yml` and `release.yml` skip every job, because a template deploys nowhere. In a repository created from the template they run as above.
+This template has `ci.yml`, `deploy.yml`, `release.yml` and `audit.yml`, the daily dependency audit ([getting-started.md section 5](getting-started.md#5-vulnerable-dependencies)). The platform team adds `promote.yml` before the first production Environment. In a template repository, `deploy.yml` and `release.yml` skip every job, because a template deploys nowhere. In a repository created from the template they run as above.
 
 Each workflow is a thin caller of a reusable workflow in `tl-platform`, pinned to a tag `app-workflows/v<x.y.z>`. Don't add steps to them: the platform team changes the reusable workflows, and a PR bumps the tag in your repository.
 
