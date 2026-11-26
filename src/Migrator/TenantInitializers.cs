@@ -1,5 +1,3 @@
-using Finbuckle.MultiTenant;
-using Finbuckle.MultiTenant.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Trislab.Framework.Persistence;
 using Trislab.Framework.Shared.Multitenancy;
@@ -26,8 +24,7 @@ internal static class TenantInitializers
     {
         using var scope = services.CreateScope();
 
-        scope.ServiceProvider.GetRequiredService<IMultiTenantContextSetter>()
-            .MultiTenantContext = new MultiTenantContext<AppTenantInfo>(tenant);
+        using var tenantUse = scope.ServiceProvider.GetRequiredService<ITenantAccessor>().Use(tenant);
 
         foreach (var initializer in scope.ServiceProvider.GetServices<IDbInitializer>())
         {

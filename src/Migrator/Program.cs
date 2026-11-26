@@ -133,7 +133,7 @@ try
     }
 
     // Single-tenant mode has no tenant catalog: the one tenant comes from configuration.
-    var tenants = await host.Services.GetRequiredService<IMultiTenantStore<AppTenantInfo>>().GetAllAsync();
+    var tenants = await host.Services.GetRequiredService<IMultiTenantStore<AppTenantInfo, string>>().GetAllAsync(CancellationToken.None);
     var tenant = tenants.Single();
 
     log.LogInformation("Migrating the modules for the tenant {TenantId}", tenant.Id);

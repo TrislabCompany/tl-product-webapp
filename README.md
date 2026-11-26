@@ -4,7 +4,7 @@ The starter for interactive web apps on the Trislab platform. Read this first; t
 
 ## What it is
 
-A React front end built on the framework's UI package and served by unprivileged nginx, a .NET 10 API built on the `tl-framework` packages in single-tenant mode, and a migrator that builds the Postgres schema before the API starts. The framework brings sign-in, users and roles, the audit trail, files, notifications, webhooks, mail through Azure Communication Services, background jobs and the log contract; this repository brings the host, the migrator, the app and the setup around them. The sample app keeps a list of items: you add an item, rename it, tick it as done or delete it, and the API stores the list in Postgres.
+A React front end built on the framework's UI package and served by unprivileged nginx, a .NET 11 API built on the `tl-framework` packages in single-tenant mode, and a migrator that builds the Postgres schema before the API starts. The framework brings sign-in, users and roles, the audit trail, files, notifications, webhooks, mail through Azure Communication Services, background jobs and the log contract; this repository brings the host, the migrator, the app and the setup around them. The sample app keeps a list of items: you add an item, rename it, tick it as done or delete it, and the API stores the list in Postgres.
 
 The starter is itself deployed in the Trislab sandbox, with demo data only, and is a release gate of the framework: each framework release is deployed here and smoke-tested before any product takes it.
 
@@ -55,13 +55,13 @@ Sandbox hostnames are behind the platform's Zero Trust sign-in; production hostn
 | React | 19.3.1, with React Router 8.5.1 |
 | Vite | 8.3.5 |
 | TypeScript | 5.9.3 |
-| Node.js | 22.23.4 (`node:22.23.4-alpine`, build stage of `web` only) |
+| Node.js | 24.22.3 (`node:24.22.3-alpine`, build stage of `web` only) |
 | pnpm | 10.34.9 |
 | ESLint and Vitest | ESLint 10.13.0 with `typescript-eslint` 8.72.1; Vitest 5.0.5 |
 | nginx | 1.30.6 (`nginxinc/nginx-unprivileged:1.30.6-alpine`) |
-| .NET | SDK 10.0.404 (`global.json`), runtime 10.0.15 (`aspnet:10.0.15-noble-chiseled`) |
-| ASP.NET Core | 10.0.15 |
-| EF Core | 10.0.15, with Npgsql's provider 10.0.3 |
+| .NET | SDK 11.0.100 (`global.json`), runtime 11.0.0 (`aspnet:11.0.0-resolute-chiseled`) |
+| ASP.NET Core | 11.0.0 |
+| EF Core | 11.0.0, with Npgsql's provider 11.0.0 |
 | Postgres | 17.11 (`postgres:17.11-alpine`, in `docker-compose.yml` and the integration tests) |
 | xUnit and Testcontainers | xUnit v3 4.0.2; Testcontainers 4.16.0 |
 | Trivy | 0.74.0, in `ci / ci` |

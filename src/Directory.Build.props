@@ -1,7 +1,10 @@
 <Project>
   <!-- Build settings every project under src/ shares. -->
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
+
+		<!-- Finbuckle.MultiTenant 11 asks for its EULA to be accepted; without it the build warns FBMT0001. -->
+		<AcceptFinbuckleEULA>true</AcceptFinbuckleEULA>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

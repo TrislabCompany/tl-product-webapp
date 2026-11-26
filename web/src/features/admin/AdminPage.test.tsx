@@ -44,6 +44,29 @@ test("signs in without a tenant header, then shows the summary with the bearer t
   expect(fetch).toHaveBeenNthCalledWith(2, "/api/admin/summary", { headers: { Authorization: "Bearer token-1" } });
 });
 
+test("picks the app's one tenant when the server asks for a tenant choice", async () => {
+  const fetch = vi
+    .fn()
+    .mockResolvedValueOnce(
+      json({
+        tenantSelectionRequired: true,
+        selectionToken: "sel-1",
+        tenants: [{ id: "app", name: "App", isDefault: true }],
+      }),
+    )
+    .mockResolvedValueOnce(json({ accessToken: "token-3", tenantSelectionRequired: false }))
+    .mockResolvedValueOnce(json({ items: 3, doneItems: 1 }));
+  vi.stubGlobal("fetch", fetch);
+
+  render(<AdminPage />);
+  await signIn();
+
+  expect(await screen.findByText("Items done")).toBeTruthy();
+  expect(fetch).toHaveBeenNthCalledWith(2, "/api/v1/identity/token/select", expect.objectContaining({ method: "POST" }));
+  expect(JSON.parse((fetch.mock.calls[1][1] as RequestInit).body as string)).toEqual({ selectionToken: "sel-1", tenant: "app" });
+  expect(fetch).toHaveBeenNthCalledWith(3, "/api/admin/summary", { headers: { Authorization: "Bearer token-3" } });
+});
+
 test("says so when the e-mail or the password is wrong", async () => {
   vi.stubGlobal("fetch", vi.fn().mockResolvedValue(json({ title: "Unauthorized" }, 401)));
 
