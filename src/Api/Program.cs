@@ -15,6 +15,8 @@ using Trislab.Framework.Web.Modules;
 using Trislab.Modules.Auditing; // module:auditing
 using Trislab.Modules.Files; // module:files
 using Trislab.Modules.Identity; // module:identity
+using Trislab.Modules.InvoiceDocuments; // module:invoice-documents
+using Trislab.Modules.InvoiceDocuments.Si; // module:invoice-documents
 using Trislab.Modules.Identity.Contracts.v1.Tokens.TokenGeneration; // module:identity
 using Trislab.Modules.Identity.Features.v1.Tokens.TokenGeneration; // module:identity
 using Trislab.Modules.Notifications; // module:notifications
@@ -61,6 +63,8 @@ builder.Services.AddMediator(o =>
         typeof(NotificationsModule), // module:notifications
         typeof(Trislab.Modules.Webhooks.Contracts.v1.CreateWebhookSubscription.CreateWebhookSubscriptionCommand), // module:webhooks
         typeof(WebhooksModule), // module:webhooks
+        typeof(Trislab.Modules.InvoiceDocuments.Contracts.v1.Documents.IssueDocumentCommand), // module:invoice-documents
+        typeof(InvoiceDocumentsModule), // module:invoice-documents
     ];
 });
 
@@ -71,6 +75,7 @@ var moduleAssemblies = new Assembly[]
     typeof(FilesModule).Assembly, // module:files
     typeof(NotificationsModule).Assembly, // module:notifications
     typeof(WebhooksModule).Assembly, // module:webhooks
+    typeof(InvoiceDocumentsModule).Assembly, // module:invoice-documents
 };
 
 // The permission of the optional staff area, registered before the modules (docs/staff-area.md).
@@ -92,6 +97,8 @@ builder.AddTrislabPlatform(o =>
 builder.Services.AddEventingCore(builder.Configuration);
 
 builder.AddModules(moduleAssemblies);
+// The Slovenian rule pack of InvoiceDocuments; a product adds the packs of the countries it serves. // module:invoice-documents
+builder.Services.AddInvoiceDocumentsSi(); // module:invoice-documents
 
 // The app's own features: the sample's context, on the same Postgres.
 builder.Services.AddAppDbContext(builder.Configuration);

@@ -33,6 +33,7 @@ internal sealed class TestDataSeeder(IServiceProvider services, ILogger<TestData
         await SeedDemoUserAsync(scope.ServiceProvider);
         await StaffRoleSeeder.SeedDemoStaffAsync(scope.ServiceProvider, logger); // feature:staff-area
         await SeedItemsAsync(scope.ServiceProvider.GetRequiredService<AppDbContext>(), cancellationToken);
+        await InvoiceDocumentsDemoData.SeedAsync(scope.ServiceProvider.GetRequiredService<Mediator.IMediator>(), logger, cancellationToken); // module:invoice-documents
     }
 
     private async Task SeedDemoUserAsync(IServiceProvider provider)

@@ -16,6 +16,13 @@
     },
     "webhooks": {
       "paths": []
+    },
+    "invoice-documents": {
+      "paths": [
+        "src/Migrator/InvoiceDocumentsDemoData.cs",
+        "src/Tests/Integration.Tests/InvoiceDocumentsTests.cs",
+        "web/src/features/invoice-documents/**"
+      ]
     }
   },
   "features": {
@@ -29,7 +36,8 @@
         "src/Tests/Integration.Tests/StaffAreaTests.cs",
         "web/src/features/admin/**",
         "web/src/locales/*/admin.json",
-        "docs/staff-area.md"
+        "docs/staff-area.md",
+        "web/src/features/invoice-documents/**"
       ]
     }
   }

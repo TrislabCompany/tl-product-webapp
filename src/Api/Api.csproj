@@ -32,6 +32,9 @@
     <PackageReference Include="Trislab.Modules.Notifications.Contracts" /> <!-- module:notifications -->
     <PackageReference Include="Trislab.Modules.Webhooks" /> <!-- module:webhooks -->
     <PackageReference Include="Trislab.Modules.Webhooks.Contracts" /> <!-- module:webhooks -->
+    <PackageReference Include="Trislab.Modules.InvoiceDocuments" /> <!-- module:invoice-documents -->
+    <PackageReference Include="Trislab.Modules.InvoiceDocuments.Contracts" /> <!-- module:invoice-documents -->
+    <PackageReference Include="Trislab.Modules.InvoiceDocuments.Si" /> <!-- module:invoice-documents -->
   </ItemGroup>
 
   <ItemGroup>
