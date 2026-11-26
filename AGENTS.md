@@ -43,7 +43,7 @@ The same block starts the `AGENTS.md` of every Trislab repository, so an agent i
 | `src/Tests/` | `Api.Tests` (unit) and `Integration.Tests` (the API after the real migrator, against Postgres in Testcontainers, needs Docker) |
 | `nuget.config`, `web/.npmrc` | The GitHub Packages feeds of the framework's NuGet and npm packages |
 | `platform.yaml` | The images and each app's sizing, within the stamp's caps ([docs/deployment.md](docs/deployment.md#5-platformyaml-and-the-caps)) |
-| `.github/workflows/` | `ci.yml` (the check `ci / ci`), `deploy.yml`, `release.yml`: they call the platform's reusable workflows |
+| `.github/workflows/` | `ci.yml` (the check `ci / ci`), `deploy.yml`, `release.yml`, `audit.yml`: they call the platform's reusable workflows. `template-update.yml` opens the next template update every day |
 | `template-manifest.yaml` | The ownership of every path, for `update-from-template` ([docs/template-releases.md](docs/template-releases.md)); starter only <!-- starter-only --> |
 | `scripts/` | The affected tests, the manifest check, the template update (`update-from-template.mjs`), and in the starter `init-product.mjs` and its choices |
 | `.claude/rules/` | The coding rules, loaded by path (index below) |
