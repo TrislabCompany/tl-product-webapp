@@ -13,7 +13,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "tsc --noEmit && pnpm run lint && pnpm run check:colors && pnpm run check:template && vitest run && pnpm run test:scripts",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "check:colors": "framework-ui-check-colors src",
     "check:template": "cd .. && node scripts/check-template-manifest.mjs",
     "test:scripts": "cd .. && node --test \"scripts/*.test.mjs\""
