@@ -7,7 +7,7 @@ paths:
 
 # TypeScript coding standards
 
-Checked by: `pnpm --dir web test`, which runs `tsc --noEmit` (strict), ESLint (`web/eslint.config.js`: recommended, typescript-eslint, react-hooks, react-refresh) and Vitest. `ci / ci` runs it.
+Checked by: `pnpm --dir web test`, which runs `tsc --noEmit` (strict), ESLint (`web/eslint.config.js`: recommended, typescript-eslint, react-hooks, react-refresh), which fails on any warning (`--max-warnings 0`), and Vitest. A `.tsx` file exports only components: a context, its hook or a helper goes in its own `.ts` file. `ci / ci` runs it.
 
 ## Types
 
