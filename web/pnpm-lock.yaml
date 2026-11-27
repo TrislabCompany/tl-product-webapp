@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@trislabcompany/framework-ui':
-        specifier: 0.5.0
-        version: 0.5.0(i18next-browser-languagedetector@8.3.0)(i18next@26.7.1(typescript@5.9.3))(react-i18next@17.1.12(i18next@26.7.1(typescript@5.9.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(react@19.3.1)
+        specifier: 0.6.0
+        version: 0.6.0(i18next-browser-languagedetector@8.3.0)(i18next@26.7.1(typescript@5.9.3))(react-i18next@17.1.12(i18next@26.7.1(typescript@5.9.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(react@19.3.1)
       i18next:
         specifier: 26.7.1
         version: 26.7.1(typescript@5.9.3)
@@ -432,8 +432,8 @@ packages:
       '@types/react-dom':
         optional: true
 
-  '@trislabcompany/framework-ui@0.5.0':
-    resolution: {integrity: sha512-DnaWQWUx2HMRg4/4DZiNvFDvmYYf4YKeREs/SoS15YgDIKHrCS6FYunIxAYLEsALdtMyQ5/RFy2fXh3K85vJXA==, tarball: https://npm.pkg.github.com/download/@trislabcompany/framework-ui/0.5.0/89254497fbe464fcea4219bf1d5a5deecb91cdb1}
+  '@trislabcompany/framework-ui@0.6.0':
+    resolution: {integrity: sha512-dXbfGgbM+RWGwpoRyz5kAssCOl4PJ/w5JY4J9eJPpzitrnS1LQI9zI+GhJgvno5LCFKey+JLW5UHbwnCtrA2+A==, tarball: https://npm.pkg.github.com/download/@trislabcompany/framework-ui/0.6.0/c217153e248f7250d084065c1a2b0ef15a958af8}
     hasBin: true
     peerDependencies:
       i18next: ^26.7.1
@@ -1669,7 +1669,7 @@ snapshots:
       '@types/react': 19.3.0
       '@types/react-dom': 19.3.0(@types/react@19.3.0)
 
-  '@trislabcompany/framework-ui@0.5.0(i18next-browser-languagedetector@8.3.0)(i18next@26.7.1(typescript@5.9.3))(react-i18next@17.1.12(i18next@26.7.1(typescript@5.9.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(react@19.3.1)':
+  '@trislabcompany/framework-ui@0.6.0(i18next-browser-languagedetector@8.3.0)(i18next@26.7.1(typescript@5.9.3))(react-i18next@17.1.12(i18next@26.7.1(typescript@5.9.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(react@19.3.1)':
     dependencies:
       '@fontsource-variable/inter': 5.3.0
       i18next: 26.7.1(typescript@5.9.3)
